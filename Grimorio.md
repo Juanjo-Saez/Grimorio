@@ -128,12 +128,7 @@ Roles de usuario por la libería, por lo que el Diagrama ER tendrá que ampliars
 
 A continuación, tras haber realizado el diagrama Entidad Relación de nuestro proyecto y documentar una buena descripción para nuestro README, pasamos a preparar el entorno.
 
-Primero vamos a instalar Laravel. Abrimos PowerShell en windows como administrador y ejecutamos el siguiente comando:
-```Powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force;
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;
-iex ((New-Object System.Net.WebClient).DownloadString('https://php.new/install/windows/8.4'))
-```
+Primero vamos a instalar Laravel. Abrimos PowerShell en windows como administrador y ejecutamos el siguiente comando
 
 De esta manera instalamos PHP, Composer y Laravel.
 
@@ -142,9 +137,11 @@ Se crea el proyecto en Laravel:
 `composer clear-cache`
 `composer create-project laravel/laravel Grimorio --prefer-dist`
 
+Añadimos Laravel Dusk para test:
+
+`composer require laravel/dusk --dev`
 
 Respecto a dependencias, por ahora no necesitamos ninguna. Se irán añadiendo según aparezcan.
-
 
 Si quisieramos añadir una librería, Carbon es una utilidad para poder gestionar fechas límite que usaremos en nuestros enlaces, es decir, que expiren pasado cierto tiempo. Además, es útil porque viene incluida en laravel por defecto. Esto se suele llamar Cron Job. Task scheduling es algo más actual que puede sustituir as Cron Jobs
 
@@ -159,7 +156,7 @@ Opciones de liberías externas:
 - Laravel Notifications. Para mandar notificaciones por sms. 
   Cuidado con meterse en tema de jobs, y eso. Nos complicará la vida bastante, llamadas tipo broadcast y ese tipo, si no es muy complicado bien, pero mejor pasar porque queremos algo simple para practicar.
 
-- Cypress o Laravel Dusk. Para End-to-end tests. (Si fuera Cypress, se necesitará node, npm etc)
+- Laravel Dusk. Para End-to-end tests. Te abre el navegador y lo comprueba con clicks, la mayoría de otros test llaman a funcionesy  comprueban, esto lanza la web entera.
 
 - Autenthication: Laravel Jetstream. Sanctum
 
