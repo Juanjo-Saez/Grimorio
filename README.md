@@ -18,6 +18,15 @@ Instalar dependencias
 `composer install`
 
 
-Levantar el servidor
+### Sail
 
-`php artisan serve`
+Requiere instalar y ejecutar Docker.
+
+`./vendor/bin/sail up -d` Levanta el servidor y la base de datos.
+
+Servidor disponible en [https://localhost:80].
+Con `./vendor/bin/sail ps` podemos comprobar que contenedores hay levantados.
+
+`./vendor/bin/sail down` Apaga los servidores y BBDD.
+
+#### Todos los comandos de php artisan deben lanzar con `./vendor/bin/sail` delante.
