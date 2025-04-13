@@ -15,7 +15,7 @@
             <p class="text-sm text-gray-600">Habla, amigo, y entra</p>
         </div>
 
-        <form method="POST" action="/users" class="space-y-6">
+        <form method="POST" action="{{ route('users.store') }}" class="space-y-6">
             @csrf
 
             <div>
@@ -28,6 +28,10 @@
                     required
                     class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
+                @error('username')
+                    <div class="text-sm px-1 py-1 text-red-500">{{ $message }}</div>
+                @enderror
+
             </div>
 
             <div>
@@ -40,6 +44,9 @@
                     required
                     class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
+                @error('email')
+                    <div class="text-sm px-1 py-1 text-red-500">{{ $message }}</div>
+                @enderror
             </div>
 
             <div>
@@ -52,18 +59,24 @@
                     required
                     class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
+                @error('password')
+                    <div class="text-sm px-1 py-1 text-red-500">{{ $message }}</div>
+                @enderror
             </div>
 
             <div>
-                <label for="password" class="block text-sm font-semibold text-gray-700">Qué? Repite.</label>
+                <label for="password_confirmation" class="block text-sm font-semibold text-gray-700">Qué? Repite.</label>
                 <input
-                    id="password"
+                    id="password_confirmation"
                     type="password"
-                    name="password"
+                    name="password_confirmation"
                     placeholder="$uper$ecreto"
                     required
                     class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
+                @error('password_confirmation')
+                    <div class="text-sm px-1 py-1 text-red-500">{{ $message }}</div>
+                @enderror
             </div>
 
             <button

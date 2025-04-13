@@ -7,6 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans">
+    <!-- Notificación -->
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <!-- Navegación -->
     <nav class="bg-white shadow-lg">
         <div class="max-w-6xl mx-auto px-4">

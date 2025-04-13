@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,7 +16,7 @@ use App\Models\User;
 
 Route::get('/', function () {
     return view('home');
-});
+})->name('home');
 
 Route::get('/login', function () {
     return view('login');
@@ -24,7 +25,4 @@ Route::get('/login', function () {
 Route::get('/signup', function () {
     return view('signup');
 });
-
-Route::get('/welcome', function () {
-    return view('welcome');
-});
+Route::post('/users', [UserController::class, 'store'])->name('users.store');

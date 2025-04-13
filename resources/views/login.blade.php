@@ -50,7 +50,7 @@
 
         <p class="mt-6 text-center text-sm text-gray-600">
             ¿No tienes cuenta?
-            <a href="#" class="text-indigo-600 hover:underline">Unirse al Círculo Arcano</a>
+            <a href="/signup" class="text-indigo-600 hover:underline">Unirse al Círculo Arcano</a>
         </p>
     </div>
 
