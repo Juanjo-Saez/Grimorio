@@ -24,7 +24,7 @@ Requiere instalar y ejecutar Docker.
 
 Aseguremonos de tener iniciado Docker (En Windows mediante la aplicación)
 
-Primero abrimos wsl, para ello cmd y `wsl ~` ir al directorio y seguimos.
+Primero abrimos wsl, para ello cmd y `wsl ~` ir al directorio y seguimos. 
 
 `./vendor/bin/sail up -d` Levanta el servidor y la base de datos.
 
