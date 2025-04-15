@@ -15,7 +15,7 @@
             <p class="text-sm text-gray-600">Habla, amigo, y entra</p>
         </div>
 
-        <form method="POST" action="{{ route('users.signup') }}" class="space-y-6">
+        <form method="POST" action="{{ route('users.store') }}" class="space-y-6">
             @csrf
 
             <div>
@@ -86,11 +86,6 @@
                 Ábrete.
             </button>
         </form>
-
-        <p class="mt-6 text-center text-sm text-gray-600">
-            ¿Ya tienes cuenta?
-            <a href="/login" class="text-indigo-600 hover:underline">Habla, amigo, y entra</a>
-        </p>
 
     </div>
 
