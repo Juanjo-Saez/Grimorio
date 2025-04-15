@@ -15,11 +15,11 @@
             <p class="text-sm text-gray-600">Inicia sesión para continuar</p>
         </div>
 
-        <form method="POST" class="space-y-6">
+        <form method="GET" action="{{ route('users.login') }}" class="space-y-6">
             @csrf
 
             <div>
-                <label for="email" class="block text-sm font-semibold text-gray-700">Correo electrónico</label>
+                <label for="email" class="block text-sm font-semibold text-gray-700">Instrucciones para el Mensajero</label>
                 <input
                     id="email"
                     type="email"
@@ -30,7 +30,7 @@
             </div>
 
             <div>
-                <label for="password" class="block text-sm font-semibold text-gray-700">Contraseña</label>
+                <label for="password" class="block text-sm font-semibold text-gray-700">Palabra de Poder Secreto</label>
                 <input
                     id="password"
                     type="password"
@@ -39,6 +39,10 @@
                     class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
             </div>
+
+            @error('email')
+                <p class="text-red-600">{{ $message }}</p>
+            @enderror
 
             <button
                 type="submit"
