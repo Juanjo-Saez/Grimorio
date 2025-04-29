@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\NoteController;
+use App\Http\Controllers\AuthController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,15 +17,19 @@ use App\Http\Controllers\UserController;
 */
 
 Route::get('/', function () {
-    return view('home');
-})->name('home');
-
-Route::get('/login', function () {
     return view('login');
 })->name('login');
-Route::get('/users', [UserController::class, 'login'])->name('users.login');
 
 Route::get('/signup', function () {
     return view('signup');
-});
-Route::post('/users', [UserController::class, 'signup'])->name('users.signup');
+})->name('signup');
+
+Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+
+Route::post('/signup', [AuthController::class, 'signup'])->name('auth.signup');
+
+Route::resource('notes', NoteController::class);
+
+// Route::resource('users', UserController::class)->except(['create', 'store']);

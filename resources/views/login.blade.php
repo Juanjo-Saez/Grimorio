@@ -9,13 +9,19 @@
 </head>
 <body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex items-center justify-center">
 
+    @if(session('success'))
+        <div class="fixed top-5 mb-4 p-4 bg-green-100 text-green-800 border border-green-300 rounded">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div class="bg-white/80 backdrop-blur-xl shadow-2xl rounded-2xl px-10 py-12 w-full max-w-md animate-fade-in">
         <div class="text-center mb-8">
             <h1 class="text-3xl font-extrabold text-gray-800 mb-2">Grimorio</h1>
             <p class="text-sm text-gray-600">Inicia sesión para continuar</p>
         </div>
 
-        <form method="GET" action="{{ route('users.login') }}" class="space-y-6">
+        <form method="POST" action="{{ route('auth.login') }}" class="space-y-6">
             @csrf
 
             <div>

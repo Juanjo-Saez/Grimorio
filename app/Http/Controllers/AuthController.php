@@ -7,26 +7,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
-class UserController extends Controller
+class AuthController extends Controller
 {
     public function signup(Request $request)
     {
-        // Validar los datos del formulario
         $validated = $request->validate([
             'username' => 'required|string|max:255|unique:users,username',
             'email' => 'required|email:rfc,dns|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        // Crear el usuario
         $user = User::create([
             'username' => $validated['username'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
 
-        // Preguntar sobre users.index
-        return redirect()->route('home')->with('success', 'Usuario creado exitosamente.');
+        return redirect()->route('notes.index')->with('success', 'Usuario creado exitosamente.');
     }
 
     public function login(Request $request)
@@ -40,11 +37,22 @@ class UserController extends Controller
 
         if ($user && Hash::check($validated['password'], $user->password)){
             Auth::login($user);
-            return redirect()->route('home');
+            return redirect()->route('notes.index');
         } else {
             return back()->withErrors([
                 'email' => 'Las credenciales no coinciden.',
             ])->onlyInput('email');
         }
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        // Invalida la sesión actual y regenera el token CSRF
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('success', 'Has cerrado sesión correctamente.');
     }
 }

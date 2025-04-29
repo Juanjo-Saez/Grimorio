@@ -15,7 +15,7 @@
             <p class="text-sm text-gray-600">Habla, amigo, y entra</p>
         </div>
 
-        <form method="POST" action="{{ route('users.signup') }}" class="space-y-6">
+        <form method="POST" action="{{ route('auth.signup') }}" class="space-y-6">
             @csrf
 
             <div>
