@@ -33,7 +33,7 @@ class NoteController extends Controller
     {
         // Validar el input
         $request->validate([
-            'filename' => 'required|string|max:255',
+            'filename' => 'required|string|max:255|unique:notes,filename',
         ]);
         // Crear la nota con el usuario autenticado
         Note::create([

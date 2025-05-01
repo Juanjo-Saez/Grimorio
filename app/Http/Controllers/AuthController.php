@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 
 class AuthController extends Controller
 {
@@ -23,7 +24,12 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        return redirect()->route('notes.index')->with('success', 'Usuario creado exitosamente.');
+        $path = storage_path('app/userNotes/' . $validated['username']);
+        File::makeDirectory($path, 0755, true);
+        
+        Auth::login($user);
+
+        return redirect()->route('notes.index');
     }
 
     public function login(Request $request)
