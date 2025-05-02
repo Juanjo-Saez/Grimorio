@@ -36,7 +36,7 @@
                 </div>
             </div>
         @empty
-            <p class="text-white text-center col-span-full">No hay notas aún.</p>
+            <p class="text-black text-center col-span-full">No hay notas aún.</p>
         @endforelse
     </div>
 

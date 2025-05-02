@@ -42,7 +42,7 @@ class NoteController extends Controller
         $path = "$folder/{$request->filename}.md";
 
         Storage::put($path, $request->content);
-    
+
         return redirect()->route('notes.index');
     }
 
@@ -100,6 +100,11 @@ class NoteController extends Controller
     
         $note->delete();
     
+        $folder = 'userNotes/' . Auth::user()->username;
+        $path = "$folder/{$note->filename}.md";
+
+        Storage::delete($path);
+
         return redirect()->route('notes.index');
     }
     
