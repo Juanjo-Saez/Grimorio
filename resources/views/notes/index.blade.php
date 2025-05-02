@@ -14,10 +14,8 @@
             <h2 class="text-xl font-bold text-gray-800">
                 <a href="{{ route('notes.show', $note) }}" class="hover:underline">{{ $note->filename }}</a>
             </h2>
-            <p class="text-sm text-gray-600 mt-1 line-clamp-2">
-                {{ Str::limit($note->content, 100) }}
-            </p>
 
+            <p>{{ $notesContent[$loop->index] }}</p>
             <div class="mt-3 flex gap-2">
                 <a href="{{ route('notes.edit', $note) }}"
                    class="text-indigo-600 hover:underline text-sm font-semibold">Editar</a>
