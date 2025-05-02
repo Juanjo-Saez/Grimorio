@@ -16,20 +16,30 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::get('/', function () {
-    return view('login');
-})->name('login');
+Route::middleware(['logged'])->group(fn () => authRoutes());
 
-Route::get('/signup', function () {
-    return view('signup');
-})->name('signup');
+Route::middleware(['auth'])->group(function (){
+    Route::post('/logout', [AuthController::class,'logout'])->name('auth.logout');
+    Route::resource('notes', NoteController::class);
+});
 
-Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
+function authRoutes() {
+    loginRoutes();
+    singupRoutes();
+}
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+function loginRoutes() {
+    Route::get('/', function () {
+        return view('login');
+    })->name('login');
 
-Route::post('/signup', [AuthController::class, 'signup'])->name('auth.signup');
+    Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
+}
 
-Route::resource('notes', NoteController::class);
+function singupRoutes() {
+    Route::get('/signup', function () {
+        return view('signup');
+    })->name('signup');
 
-// Route::resource('users', UserController::class)->except(['create', 'store']);
+    Route::post('/signup', [AuthController::class, 'signup'])->name('auth.signup');
+}

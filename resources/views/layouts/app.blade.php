@@ -29,7 +29,7 @@
         <h1 class="text-xl font-extrabold text-indigo-700">Grimorio</h1>
         <div class="space-x-4 text-sm font-semibold">
             @auth
-                <span class="text-gray-600">Hola, {{ auth()->user()->username }}</span>
+                <span class="text-gray-600">Saludos, {{ auth()->user()->username }}</span>
                 <form method="POST" action="{{ route('auth.logout') }}" class="inline">
                     @csrf
                     <button
@@ -49,8 +49,8 @@
     </nav>
 
     {{-- CONTENIDO CENTRAL --}}
-    <main class="pt-28 flex justify-center px-4 fade-in">
-        <div class="bg-white/80 backdrop-blur-xl shadow-2xl rounded-2xl px-10 py-12 w-full max-w-md">
+    <main class="pt-28 flex justify-start px-8 fade-in">
+        <div class="bg-white/80 backdrop-blur-xl shadow-2xl rounded-2xl px-10 py-12 w-full ">
             @yield('content')
         </div>
     </main>
