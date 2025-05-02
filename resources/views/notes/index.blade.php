@@ -26,12 +26,18 @@
 
                 <div class="mt-4 flex justify-end space-x-3 text-sm">
                     <a href="{{ route('notes.edit', $note) }}"
-                       class="text-gray-500 hover:text-indigo-600 transition">Editar</a>
+                       class="text-gray-500 hover:text-indigo-600 transition"
+                       data-test-id="edit-{{$note->filename}}">Editar</a>
 
                     <form action="{{ route('notes.destroy', $note) }}" method="POST" onsubmit="return confirm('¿Eliminar esta nota?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="text-red-500 hover:text-red-600 transition">Eliminar</button>
+                        <button
+                            type="submit"
+                            class="text-red-500 hover:text-red-600 transition"
+                            data-test-id="delete-{{$note->filename}}">
+                            Eliminar
+                        </button>
                     </form>
                 </div>
             </div>
