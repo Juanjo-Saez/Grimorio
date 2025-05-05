@@ -24,5 +24,4 @@ Route::get('link/{note_id}', [LinkController::class, 'getLink']);
 Route::get('shared/{note_id}', [LinkController::class, 'getLink']);
 
 Route::post('login', [LinkController::class, 'login']);
-Route::apiResource('links', LinkController::class)->middleware('auth.jwt');
 
