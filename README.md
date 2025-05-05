@@ -11,26 +11,34 @@ Esta basado en el metodo [Zettlekasten](https://es.wikipedia.org/wiki/Zettelkast
 Las notas se enlazan entre si mediante *links* y se agrupan por *etiquetas*.
 
 
-### Desarrollo
+## Desarrollo
 
 Instalar dependencias
 
 `composer install`
 
 
-### Sail
+#### Sail
 
-Requiere instalar y ejecutar Docker.
-
-Aseguremonos de tener iniciado Docker (En Windows mediante la aplicación)
-
-Primero abrimos wsl, para ello cmd y `wsl ~` ir al directorio y seguimos. 
+Requiere instalar y ejecutar [Docker](https://www.docker.com/get-started/).
 
 `./vendor/bin/sail up -d` Levanta el servidor y la base de datos.
 
+`./vendor/bin/sail php artisan migrate:fresh --seed` Ejecuta de cero todas las migraciones y los seeders de la base de datos.
+
 Servidor disponible en [https://localhost:80].
-Con `./vendor/bin/sail ps` podemos comprobar que contenedores hay levantados.
 
-`./vendor/bin/sail down` Apaga los servidores y BBDD.
+`./vendor/bin/sail ps` Comprueba los contenedores levantados.
 
-#### Todos los comandos de php artisan deben lanzar con `./vendor/bin/sail` delante.
+`./vendor/bin/sail down` Apaga el servidor y la BBDD.
+
+**Todos los comandos de php artisan deben lanzar con `./vendor/bin/sail` delante.**
+
+
+#### Testing con Cypress
+
+`npm i` Instala la suite de cypress.
+
+`npx cypress open` Ejecuta los tests interactivos.
+
+`npx cypress run` Ejecuta los tests desde el terminal.
