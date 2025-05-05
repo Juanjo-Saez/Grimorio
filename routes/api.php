@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\LinkController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +19,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('link/{note_id}', [LinkController::class, 'getLink']);
+Route::get('shared/{note_id}', [LinkController::class, 'getLink']);
+
+Route::post('login', [LinkController::class, 'login']);
+Route::apiResource('links', LinkController::class)->middleware('auth.jwt');
+

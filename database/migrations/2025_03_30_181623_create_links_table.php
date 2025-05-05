@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('links', function (Blueprint $table) {
             $table->id(); // Primary Key autoincremental
-            $table->foreignId('note_id')->constrained();
-            $table->boolean('read_only');
-            $table->date('expiry_date');
-            $table->string('shortURL');
+            $table->foreignId('note_id')->constrained()->onDelete('cascade');
+            $table->boolean('read_only')->default(true);
+            $table->date('expiry_date')->nullable();
+            $table->string('shortURL')->nullable();
         });
     }
 

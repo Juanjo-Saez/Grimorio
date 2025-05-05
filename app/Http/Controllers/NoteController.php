@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Note;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -12,7 +13,7 @@ class NoteController extends Controller
 
     public function index()
     {
-        $notes = Note::where('user_id', Auth::id())->get(); 
+        $notes = Auth::user()->notes()->latest()->get();
         $notesContent= [];
         foreach ($notes as $note) {
             $path = 'userNotes/' . Auth::user()->username . '/' . $note->filename . '.md';
