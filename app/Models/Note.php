@@ -11,4 +11,11 @@ class Note extends Model
 
     protected $fillable = ['filename', 'user_id'];
 
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
+    public function link() {
+        return $this->hasOne(Link::class);
+    }
 }

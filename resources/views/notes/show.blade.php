@@ -1,6 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
+
+    <script>
+        function generateLink(noteId) {
+            const options ={
+                method: 'POST'
+            }
+            fetch('link', options)
+        }
+
+    </script>
+
     <div class="space-y-6">
         <h2 class="text-2xl font-bold text-indigo-700">Detalle de la Nota</h2>
 
@@ -19,6 +30,14 @@
                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-all duration-200">
                     Editar
                 </a>
+
+                <button
+                    onclick="generateLink({{ $note->id }})"
+                    class="bg-indigo-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-all duration-200""
+                >
+                    Compartir
+                </button>
+
 
                 <form action="{{ route('notes.destroy', $note->id) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta nota?');">
                     @csrf
