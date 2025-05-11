@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 
 class NoteController extends Controller
 {
@@ -45,12 +46,6 @@ class NoteController extends Controller
         Storage::put($path, $request->content);
 
         return redirect()->route('notes.index');
-    }
-
-
-    public function show(Note $note)
-    {
-        return view('notes.show',compact('note'));
     }
 
 
@@ -109,5 +104,6 @@ class NoteController extends Controller
         return redirect()->route('notes.index');
     }
     
+
 
 }

@@ -20,7 +20,8 @@ Route::middleware(['logged'])->group(fn () => authRoutes());
 
 Route::middleware(['auth'])->group(function (){
     Route::post('/logout', [AuthController::class,'logout'])->name('auth.logout');
-    Route::resource('notes', NoteController::class);
+    Route::post('/notes/{id}/translate', [NoteController::class, 'translate'])->name('notes.translate');
+    Route::resource('notes', NoteController::class)->except(['show']);
 });
 
 function authRoutes() {

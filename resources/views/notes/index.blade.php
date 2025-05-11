@@ -14,7 +14,7 @@
             <div class="bg-white border border-gray-200 rounded-xl shadow-md p-5 flex flex-col justify-between h-full">
                 <div>
                     <h2 class="text-lg font-bold text-indigo-700 mb-2">
-                        <a href="{{ route('notes.show', $note) }}" class="hover:underline">
+                        <a href="{{ route('notes.edit', $note) }}" class="hover:underline">
                             {{ $note->filename }}
                         </a>
                     </h2>
@@ -31,8 +31,7 @@
 
                     <form action="{{ route('notes.destroy', $note) }}" method="POST" onsubmit="return confirm('¿Eliminar esta nota?')">
                         @csrf
-                        @method('DELETE')
-                        <button
+                        @method('DELETE')                        <button
                             type="submit"
                             class="text-red-500 hover:text-red-600 transition"
                             data-test-id="delete-{{$note->filename}}">
