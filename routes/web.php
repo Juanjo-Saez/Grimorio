@@ -15,7 +15,7 @@ use App\Http\Controllers\AuthController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
+/*
 Route::middleware(['logged'])->group(fn () => authRoutes());
 
 Route::middleware(['auth'])->group(function (){
@@ -44,3 +44,4 @@ function singupRoutes() {
 
     Route::post('/signup', [AuthController::class, 'signup'])->name('auth.signup');
 }
+    */
