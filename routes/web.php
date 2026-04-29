@@ -1,45 +1,43 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\User;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\NoteController;
-use App\Http\Controllers\AuthController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
+| 
+| Rutas para servir las vistas (templates Blade)
 |
 */
 
-Route::middleware(['logged'])->group(fn () => authRoutes());
+// Página de inicio
+Route::get('/', function () {
+    return view('home');
+})->name('home');
 
-Route::middleware(['auth'])->group(function (){
-    Route::post('/logout', [AuthController::class,'logout'])->name('auth.logout');
-    Route::resource('notes', NoteController::class);
+// Auth
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
+
+Route::get('/register', function () {
+    return view('register');
+})->name('register');
+
+// Notas (protegidas con autenticación de cliente)
+Route::get('/notes', function () {
+    return view('notes.index');
 });
 
-function authRoutes() {
-    loginRoutes();
-    singupRoutes();
-}
+Route::get('/notes/create', function () {
+    return view('notes.create');
+});
 
-function loginRoutes() {
-    Route::get('/', function () {
-        return view('login');
-    })->name('login');
+Route::get('/notes/{id}', function ($id) {
+    return view('notes.show');
+});
 
-    Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
-}
-
-function singupRoutes() {
-    Route::get('/signup', function () {
-        return view('signup');
-    })->name('signup');
-
-    Route::post('/signup', [AuthController::class, 'signup'])->name('auth.signup');
-}
+Route::get('/notes/{id}/edit', function ($id) {
+    return view('notes.edit');
+});

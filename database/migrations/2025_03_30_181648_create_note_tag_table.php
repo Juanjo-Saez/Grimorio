@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('note_tags', function (Blueprint $table) {
-            $table->id(); // Primary Key autoincremental
+        Schema::create('note_tag', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('note_id')->constrained()->onDelete('cascade');
             $table->foreignId('tag_id')->constrained()->onDelete('cascade');
             $table->timestamps();
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('note_tags');
+        Schema::dropIfExists('note_tag');
     }
 };

@@ -1,0 +1,15 @@
+{
+  "base_path": "app/Features",
+  "features": [
+    "Auth",
+    "Note",
+    "SharedLink"
+  ],
+  "ai_directory": ".ai",
+  "ai_files": [
+    "requirements.md",
+    "plan.md",
+    "tasks.md",
+    "decisions.md"
+  ]
+}

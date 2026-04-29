@@ -1,58 +1,79 @@
 @extends('layouts.app')
 
+@section('title', 'Ver Nota - Grimorio')
+
 @section('content')
-
-    <script>
-        function generateLink(noteId) {
-            const options ={
-                method: 'POST'
-            }
-            fetch('link', options)
-        }
-
-    </script>
-
-    <div class="space-y-6">
-        <h2 class="text-2xl font-bold text-indigo-700">Detalle de la Nota</h2>
-
-        <div class="bg-white rounded-xl p-6 shadow-md">
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ $note->filename }}</h3>
-            <p class="text-gray-700 whitespace-pre-line">{{ $note->content }}</p>
-
-            <div class="text-sm text-gray-500 mt-4">
-                Creado el: {{ $note->created_at->format('d/m/Y H:i') }}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body p-5" id="noteContent">
+                <p class="text-center">Cargando...</p>
             </div>
         </div>
-
-        @auth
-            <div class="flex space-x-4 mt-4">
-                <a href="{{ route('notes.edit', $note->id) }}"
-                   class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-all duration-200">
-                    Editar
-                </a>
-
-                <button
-                    onclick="generateLink({{ $note->id }})"
-                    class="bg-indigo-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-all duration-200""
-                >
-                    Compartir
-                </button>
-
-
-                <form action="{{ route('notes.destroy', $note->id) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta nota?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl shadow-md transition-all duration-200">
-                        Eliminar
-                    </button>
-                </form>
-            </div>
-        @endauth
-
-        <a href="{{ route('notes.index') }}"
-           class="inline-block mt-6 text-indigo-600 hover:text-indigo-800 underline">
-            ← Volver al Grimorio
-        </a>
     </div>
+</div>
+
+@section('extra-js')
+<script>
+    const noteId = window.location.pathname.split('/')[2];
+
+    async function loadNote() {
+        try {
+            const note = await apiCall(`/v1/notes/${noteId}`);
+            renderNote(note);
+        } catch (error) {
+            console.error(error);
+            document.getElementById('noteContent').innerHTML = '<p class="alert alert-danger">Nota no encontrada</p>';
+        }
+    }
+
+    function renderNote(note) {
+        document.getElementById('noteContent').innerHTML = `
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h2 class="mb-2">${note.title}</h2>
+                        ${note.description ? `<p class="text-muted">${note.description}</p>` : ''}
+                        <small class="text-muted">Creada: ${new Date(note.created_at).toLocaleString('es-ES')}</small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="/notes/${note.id}/edit" class="btn btn-outline-warning">Editar</a>
+                        <button class="btn btn-outline-danger" onclick="deleteAndRedirect(${note.id})">Eliminar</button>
+                    </div>
+                </div>
+
+                ${note.tags && note.tags.length > 0 ? `
+                    <div class="mb-4">
+                        ${note.tags.map(tag => `<span class="badge badge-primary">${tag.name}</span>`).join(' ')}
+                    </div>
+                ` : ''}
+
+                <hr>
+                <div class="mt-4">
+                    <h5>Contenido</h5>
+                    <p style="white-space: pre-wrap;">${note.content || '(Sin contenido)'}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    async function deleteAndRedirect(id) {
+        if (!confirm('¿Eliminar esta nota?')) return;
+        
+        try {
+            await apiCall(`/v1/notes/${id}`, 'DELETE');
+            alert('Nota eliminada');
+            window.location.href = '/notes';
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    if (isAuthenticated()) {
+        loadNote();
+    } else {
+        window.location.href = '/login';
+    }
+</script>
+@endsection
 @endsection

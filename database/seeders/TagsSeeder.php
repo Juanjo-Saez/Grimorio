@@ -14,13 +14,20 @@ class TagsSeeder extends Seeder
     public function run(): void
     {
         DB::table('tags')->insert([
+            'user_id' => 1,
             'tagname' => "Programing",
         ]);
         DB::table('tags')->insert([
-            'tagname' => "Spells",
+            'user_id' => 1,
+            'tagname' => "Learning",
         ]);
         DB::table('tags')->insert([
-            'tagname' => "Culture",
+            'user_id' => 2,
+            'tagname' => "Magic",
+        ]);
+        DB::table('tags')->insert([
+            'user_id' => 2,
+            'tagname' => "Spells",
         ]);
     }
 }

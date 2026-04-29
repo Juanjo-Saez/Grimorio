@@ -1,43 +1,78 @@
 @extends('layouts.app')
 
+@section('title', 'Editar Nota - Grimorio')
+
 @section('content')
-    <form method="POST" action="{{ route('notes.update', $note) }}" class="space-y-6">
-        @csrf
-        @method('PUT')
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body p-5">
+                <h2 class="card-title mb-4">Editar Nota</h2>
+                
+                <form id="editForm">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Título *</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Contenido</label>
+                        <textarea class="form-control" id="content" name="content" rows="8"></textarea>
+                    </div>
 
-        <div>
-            <label for="filename" class="block text-sm font-semibold text-gray-700">Título</label>
-            <input
-                id="filename"
-                name="filename"
-                type="text"
-                value="{{ old('filename', $note->filename) }}"
-                required
-                class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-            @error('filename')
-                <div class="text-sm text-red-500 mt-1">{{ $message }}</div>
-            @enderror
+                    <div class="mb-4">
+                        <label for="description" class="form-label">Descripción</label>
+                        <input type="text" class="form-control" id="description" name="description" maxlength="500">
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        <a href="#" class="btn btn-secondary" onclick="window.history.back()">Cancelar</a>
+                    </div>
+                </form>
+            </div>
         </div>
+    </div>
+</div>
 
-        <div>
-            <label for="content" class="block text-sm font-semibold text-gray-700">Contenido</label>
-            <textarea
-                id="content"
-                name="content"
-                rows="4"
-                class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >{{ old('content', $content) }}</textarea>
-            @error('content')
-                <div class="text-sm text-red-500 mt-1">{{ $message }}</div>
-            @enderror
-        </div>
+@section('extra-js')
+<script>
+    const noteId = window.location.pathname.split('/')[2];
 
-        <button
-            type="submit"
-            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-xl transition-all duration-200 shadow-md"
-        >
-            Actualizar Nota
-        </button>
-    </form>
+    async function loadNote() {
+        try {
+            const note = await apiCall(`/v1/notes/${noteId}`);
+            document.getElementById('title').value = note.title;
+            document.getElementById('content').value = note.content || '';
+            document.getElementById('description').value = note.description || '';
+        } catch (error) {
+            console.error(error);
+            alert('No se pudo cargar la nota');
+        }
+    }
+
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        try {
+            await apiCall(`/v1/notes/${noteId}`, 'PUT', {
+                title: document.getElementById('title').value,
+                content: document.getElementById('content').value,
+                description: document.getElementById('description').value,
+            });
+
+            alert('¡Nota actualizada!');
+            window.location.href = `/notes/${noteId}`;
+        } catch (error) {
+            console.error(error);
+        }
+    });
+
+    if (isAuthenticated()) {
+        loadNote();
+    } else {
+        window.location.href = '/login';
+    }
+</script>
+@endsection
 @endsection

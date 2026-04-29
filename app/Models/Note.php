@@ -9,13 +9,32 @@ class Note extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['filename', 'user_id'];
+    protected $fillable = [
+        'user_id',
+        'title',
+        'content',
+        'description',
+    ];
 
-    public function user() {
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    // Relaciones
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function link() {
-        return $this->hasOne(Link::class);
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'note_tag');
+    }
+
+    public function sharedLinks()
+    {
+        return $this->hasMany(SharedLink::class);
     }
 }
+

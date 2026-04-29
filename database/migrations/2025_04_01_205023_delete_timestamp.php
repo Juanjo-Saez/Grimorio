@@ -15,7 +15,7 @@ return new class extends Migration
             $table->dropColumn('created_at');
             $table->dropColumn('updated_at');
         });
-        Schema::table('note_tags', function (Blueprint $table) {
+        Schema::table('note_tag', function (Blueprint $table) {
             $table->dropColumn('created_at');
             $table->dropColumn('updated_at');
         });
@@ -32,7 +32,7 @@ return new class extends Migration
         Schema::table('tags', function (Blueprint $table) {
             $table->timestamps();
         });
-        Schema::table('note_tags', function (Blueprint $table) {
+        Schema::table('note_tag', function (Blueprint $table) {
             $table->timestamps();
         });
         Schema::table('notes', function (Blueprint $table) {

@@ -13,15 +13,15 @@ class Note_TagsSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('note_tags')->insert([
+        DB::table('note_tag')->insert([
             'note_id' => 1,
             'tag_id' => 2,
         ]);
-        DB::table('note_tags')->insert([
+        DB::table('note_tag')->insert([
             'note_id' => 2,
             'tag_id' => 1,
         ]);
-        DB::table('note_tags')->insert([
+        DB::table('note_tag')->insert([
             'note_id' => 2,
             'tag_id' => 3,
         ]);

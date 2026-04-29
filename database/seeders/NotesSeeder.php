@@ -17,23 +17,30 @@ class NotesSeeder extends Seeder
     {
         DB::table('notes')->insert([
             'user_id' => 1,
-            'filename' => "pepe-leches-1",
+            'title' => "Pepe Leches First Note",
+            'content' => "Esta es la primera nota de prueba de Pepe Leches.",
+            'description' => "Nota de prueba",
             'created_at' => now(),  
             'updated_at' => now(),  
         ]);
-
-        $path = "userNotes/pepeleches/pepe-leches-1.md";
-        Storage::put($path, "Esta no es la primera nota de prueba.");
 
         DB::table('notes')->insert([
-            'user_id' => 3,
-            'filename' => "fireball",
+            'user_id' => 2,
+            'title' => "Fireball Spell",
+            'content' => "A powerful fire-based spell. Pues...no se...fireball?",
+            'description' => "Magic spell documentation",
             'created_at' => now(),  
             'updated_at' => now(),  
         ]);
 
-        $path = "userNotes/qud/fireball.md";
-        Storage::put($path, "Pues...no se...fireball?");
+        DB::table('notes')->insert([
+            'user_id' => 1,
+            'title' => "Learning Notes",
+            'content' => "Notes about learning programming and best practices.",
+            'description' => "Educational content",
+            'created_at' => now(),  
+            'updated_at' => now(),  
+        ]);
     }
 
 }
