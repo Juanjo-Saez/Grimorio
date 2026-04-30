@@ -3,111 +3,144 @@
 namespace App\Http\Controllers;
 
 use App\Models\Note;
-use App\Models\User;
+use App\Services\NoteService;
+use App\Services\SearchService;
+use App\Services\TagService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class NoteController extends Controller
 {
+    public function __construct(
+        protected NoteService $notes,
+        protected SearchService $search,
+        protected TagService $tags,
+    ) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        $notes = Auth::user()->notes()->latest()->get();
-        $notesContent= [];
-        foreach ($notes as $note) {
-            $path = 'userNotes/' . Auth::user()->username . '/' . $note->filename . '.md';
-            array_push($notesContent,Storage::get($path));
-        }
-        return view('notes.index', compact('notes', 'notesContent'));
-    }
+        $user = Auth::user();
+        $q = $request->string('q')->toString();
+        $op = $request->string('op')->toString() ?: 'AND';
+        $tagIds = array_filter((array) $request->input('tags', []));
+        $shared = $request->boolean('shared');
 
+        $hasFilters = $q !== '' || !empty($tagIds) || $shared;
+
+        $notes = $hasFilters
+            ? $this->search->search($user, $q, $op, $tagIds, $shared)
+            : $this->notes->index($user);
+
+        $userTags = $this->tags->getUserTags($user);
+
+        return view('notes.index', [
+            'notes' => $notes,
+            'userTags' => $userTags,
+            'q' => $q,
+            'op' => $op,
+            'selectedTags' => array_map('intval', $tagIds),
+            'shared' => $shared,
+        ]);
+    }
 
     public function create()
     {
-        return view('notes.create');
+        return view('notes.create', [
+            'userTags' => $this->tags->getUserTags(Auth::user()),
+        ]);
     }
-
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+        $data = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:500'],
+            'content' => ['nullable', 'string'],
+            'tags' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        // Validar título único por usuario
         $request->validate([
-            'filename' => 'required|string|max:255|unique:notes,filename',
+            'title' => function ($attr, $value, $fail) use ($user) {
+                if ($user->notes()->where('title', $value)->exists()) {
+                    $fail('Ya tienes una nota con ese título.');
+                }
+            },
         ]);
-        Note::create([
-            'filename' => $request->filename,
-            'user_id' => Auth::id(),
-        ]);
 
-        $folder = 'userNotes/' . Auth::user()->username;
-        $path = "$folder/{$request->filename}.md";
+        $note = $this->notes->create($user, $data);
 
-        Storage::put($path, $request->content);
+        if (!empty($data['tags'])) {
+            $names = array_filter(array_map('trim', explode(',', $data['tags'])));
+            $this->tags->syncFromNames($user, $note, $names);
+        }
 
-        return redirect()->route('notes.index');
+        return redirect()->route('notes.show', $note)->with('success', 'Nota creada correctamente.');
     }
-
 
     public function show(Note $note)
     {
-        return view('notes.show',compact('note'));
+        $note = $this->notes->show(Auth::user(), $note);
+        return view('notes.show', compact('note'));
     }
-
 
     public function edit(Note $note)
     {
-        if (auth()->id() !== $note->user_id) {
-            abort(403, 'No tienes permiso para editar esta nota.');
-        }
-
-        $folder = 'userNotes/' . Auth::user()->username;
-        $path = "$folder/{$note->filename}.md";
-    
-        $content = Storage::exists($path) ? Storage::get($path) : '';
-
-        return view('notes.edit', compact('note', 'content'));
+        $note = $this->notes->show(Auth::user(), $note);
+        $userTags = $this->tags->getUserTags(Auth::user());
+        return view('notes.edit', compact('note', 'userTags'));
     }
-
 
     public function update(Request $request, Note $note)
     {
+        $user = Auth::user();
+        $data = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:500'],
+            'content' => ['nullable', 'string'],
+            'tags' => ['nullable', 'string', 'max:500'],
+        ]);
 
-        if (auth()->id() !== $note->user_id) {
-            abort(403, 'No tienes permiso para editar esta nota.');
-        }
-    
+        // Validar título único por usuario excepto esta nota
         $request->validate([
-            'filename' => 'required|string|max:255',
+            'title' => function ($attr, $value, $fail) use ($user, $note) {
+                if ($user->notes()->where('title', $value)->where('id', '!=', $note->id)->exists()) {
+                    $fail('Ya tienes otra nota con ese título.');
+                }
+            },
         ]);
-    
-        $note->update([
-            'filename' => $request->input('filename'),
-        ]);
-    
-        $folder = 'userNotes/' . Auth::user()->username;
-        $path = "$folder/{$note->filename}.md";
 
-        Storage::put($path, $request->content);
+        $note = $this->notes->update($user, $note, $data);
 
-        return redirect()->route('notes.index');
+        $names = !empty($data['tags'])
+            ? array_filter(array_map('trim', explode(',', $data['tags'])))
+            : [];
+        $this->tags->syncFromNames($user, $note, $names);
+
+        return redirect()->route('notes.show', $note)->with('success', 'Nota actualizada.');
     }
-    
 
     public function destroy(Note $note)
     {
-        if (auth()->id() !== $note->user_id) {
-            abort(403, 'No tienes permiso para eliminar esta nota.');
-        }
-    
-        $note->delete();
-    
-        $folder = 'userNotes/' . Auth::user()->username;
-        $path = "$folder/{$note->filename}.md";
-
-        Storage::delete($path);
-
-        return redirect()->route('notes.index');
+        $this->notes->delete(Auth::user(), $note);
+        return redirect()->route('notes.index')->with('success', 'Nota eliminada.');
     }
-    
 
+    /**
+     * AJAX: notas relacionadas con un tag (para vista crear nota).
+     */
+    public function notesByTag(Request $request, int $tag)
+    {
+        $notes = $this->tags->getNotesByTag(Auth::user(), $tag);
+        return response()->json($notes);
+    }
+
+    /**
+     * AJAX: tags del usuario (para autocomplete).
+     */
+    public function userTags()
+    {
+        return response()->json($this->tags->getUserTags(Auth::user()));
+    }
 }

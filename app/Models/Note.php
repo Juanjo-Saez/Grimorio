@@ -21,7 +21,6 @@ class Note extends Model
         'updated_at' => 'datetime',
     ];
 
-    // Relaciones
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -37,4 +36,3 @@ class Note extends Model
         return $this->hasMany(SharedLink::class);
     }
 }
-

@@ -11,22 +11,9 @@ class Tag extends Model
 
     protected $fillable = [
         'user_id',
-        'tagname',
+        'name',
     ];
 
-    protected $appends = ['name'];
-
-    protected $casts = [
-        'created_at' => 'datetime',
-    ];
-
-    // Accessor: expone 'name' como alias de 'tagname'
-    public function getNameAttribute(): ?string
-    {
-        return $this->attributes['tagname'] ?? null;
-    }
-
-    // Relaciones
     public function user()
     {
         return $this->belongsTo(User::class);

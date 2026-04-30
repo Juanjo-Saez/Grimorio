@@ -1,6 +1,8 @@
-En la búsqueda el AND o OR tiene que cambiar.
-Indice con numero de pagina
-Cada pinto page break
+- En la búsqueda el AND o OR tiene que cambiar.
+- Indice con numero de pagina
+- Cada pinto page break
+- Gráfico del DAFO
+- Justificar los párrafos.
 
 Apuntar los bloqueos y que partes me costaron más (fases de Gantt de previsión) Establecer buenas estimaciones y saber qué cosas han costado menos esperando más y viceversa
 Mencionar las razones de por qué (Por ejemplo, las prácticas han ayudado en la JWT) Se busca retroalimentacion entre practicas y proyectos
@@ -20,3 +22,8 @@ Las decisiones de por qué he elegido cierta tipografía, colores, es un poco su
 Hablar de por qué laravel, por qué sail, blade, etc. Y decir varias cosas buenas de cada uno y comparativas
 
 15 minutos en lugar de los 20 es muy negativo, intenta cuadrarlo lo máximo posible. Mejor quedarte 1 minuto corto que 15 segundos largo. Cuando quedan 10 minutos Oscar te lo indica con las manos, al igual que con 5, para ir organizandote. Puedo poner mi movil con cronometro.
+
+
+
+!Preguntas para siguiente reunion:
+- Dejo el DAFO en texto e imagen o solo una de las dos?

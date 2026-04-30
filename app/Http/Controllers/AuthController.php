@@ -2,63 +2,62 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    public function signup(Request $request)
+    public function showLogin()
     {
-        $validated = $request->validate([
-            'username' => 'required|string|max:255|unique:users,username',
-            'email' => 'required|email:rfc,dns|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-
-        $user = User::create([
-            'username' => $validated['username'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
-
-        $path = storage_path('app/userNotes/' . $validated['username']);
-        File::makeDirectory($path, 0755, true);
-        
-        Auth::login($user);
-
-        return redirect()->route('notes.index');
+        return view('auth.login');
     }
 
     public function login(Request $request)
     {
-        $validated = $request->validate([
+        $credentials = $request->validate([
             'email' => ['required', 'email'],
-            'password' => ['required'],
+            'password' => ['required', 'string'],
         ]);
 
-        $user = User::where('email', $validated['email'])->first();
-
-        if ($user && Hash::check($validated['password'], $user->password)){
-            Auth::login($user);
-            return redirect()->route('notes.index');
-        } else {
-            return back()->withErrors([
-                'email' => 'Las credenciales no coinciden.',
-            ])->onlyInput('email');
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->intended(route('notes.index'));
         }
+
+        return back()
+            ->withInput($request->only('email'))
+            ->withErrors(['email' => 'Credenciales incorrectas.']);
+    }
+
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
+
+    public function register(Request $request)
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'confirmed', Password::min(8)],
+        ]);
+
+        $user = \App\Models\User::create([
+            'email' => $data['email'],
+            'password' => $data['password'],
+        ]);
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->route('notes.index')->with('success', '¡Bienvenido a Grimorio!');
     }
 
     public function logout(Request $request)
     {
         Auth::logout();
-
-        // Invalida la sesión actual y regenera el token CSRF
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        return redirect()->route('login')->with('success', 'Has cerrado sesión correctamente.');
+        return redirect()->route('home');
     }
 }

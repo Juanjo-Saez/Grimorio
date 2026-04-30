@@ -1,137 +1,96 @@
 @extends('layouts.app')
-
-@section('title', 'Mis Notas - Grimorio')
+@section('title', 'Mis Notas')
 
 @section('content')
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h1>Mis Notas</h1>
-        </div>
-        <div class="col-md-4">
-            <a href="/notes/create" class="btn btn-primary w-100">+ Nueva Nota</a>
-        </div>
-    </div>
-
-    <!-- Búsqueda -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <input type="text" id="searchQuery" class="form-control" placeholder="Buscar notas...">
-                </div>
-                <div class="col-md-3">
-                    <select id="searchOp" class="form-control">
-                        <option value="AND">AND (Todos)</option>
-                        <option value="OR">OR (Cualquiera)</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <button class="btn btn-outline-primary w-100" onclick="search()">🔍 Buscar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Lista de Notas -->
-    <div id="notesList"></div>
-
-    <!-- Estado vacío -->
-    <div id="emptyState" class="empty-state" style="display: none;">
-        <div class="empty-state-icon">📝</div>
-        <h3>No hay notas aún</h3>
-        <p>Crea tu primera nota para comenzar</p>
-        <a href="/notes/create" class="btn btn-primary">Crear Primera Nota</a>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Mis Notas</h2>
+    <a href="{{ route('notes.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva nota</a>
 </div>
 
-@section('extra-js')
-<script>
-    let notes = [];
+<form method="GET" action="{{ route('notes.index') }}" class="card shadow-sm mb-4" id="filterForm">
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-md-7">
+                <input type="text" name="q" value="{{ $q }}" class="form-control" placeholder="Buscar en título, contenido o descripción...">
+            </div>
+            <div class="col-md-2">
+                <select name="op" class="form-select">
+                    <option value="AND" @selected($op==='AND')>Todos los términos (AND)</option>
+                    <option value="OR" @selected($op==='OR')>Cualquier término (OR)</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button class="btn btn-primary flex-fill"><i class="bi bi-search"></i> Buscar</button>
+                <a href="{{ route('notes.index') }}" class="btn btn-outline-secondary">Reset</a>
+            </div>
+        </div>
 
-    async function loadNotes() {
-        try {
-            const response = await apiCall('/v1/notes');
-            notes = response.data || [];
-            renderNotes(notes);
-        } catch (error) {
-            console.error(error);
-        }
-    }
+        <div class="form-check form-switch mt-3">
+            <input class="form-check-input" type="checkbox" name="shared" value="1" id="shared" @checked($shared) onchange="document.getElementById('filterForm').submit()">
+            <label class="form-check-label" for="shared">Incluir notas compartidas conmigo</label>
+        </div>
 
-    async function search() {
-        const query = document.getElementById('searchQuery').value;
-        const op = document.getElementById('searchOp').value;
-        
-        if (!query.trim()) {
-            loadNotes();
-            return;
-        }
+        @if($userTags->count())
+            <div class="mt-3">
+                <small class="text-muted d-block mb-2">Filtrar por tags:</small>
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach($userTags as $tag)
+                        <label class="badge text-bg-light tag-chip @if(in_array($tag->id, $selectedTags)) active text-bg-primary @endif">
+                            <input type="checkbox" name="tags[]" value="{{ $tag->id }}" class="d-none" @checked(in_array($tag->id, $selectedTags)) onchange="document.getElementById('filterForm').submit()">
+                            #{{ $tag->name }}
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+    </div>
+</form>
 
-        try {
-            const response = await apiCall(`/v1/notes/search?q=${encodeURIComponent(query)}&op=${op}`);
-            notes = response.data || [];
-            renderNotes(notes);
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    function renderNotes(notesList) {
-        const container = document.getElementById('notesList');
-        const emptyState = document.getElementById('emptyState');
-
-        if (notesList.length === 0) {
-            container.innerHTML = '';
-            emptyState.style.display = 'block';
-            return;
-        }
-
-        emptyState.style.display = 'none';
-        container.innerHTML = notesList.map(note => `
-            <div class="card note-card mb-3">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-9">
-                            <h5 class="card-title">${note.title || 'Sin título'}</h5>
-                            <p class="card-text text-muted">${note.description || 'Sin descripción'}</p>
-                            ${note.tags && note.tags.length > 0 ? `
+@if($notes->count())
+    <div class="row g-3">
+        @foreach($notes as $note)
+            <div class="col-md-6 col-lg-4">
+                <div class="card note-card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">
+                            <a href="{{ route('notes.show', $note) }}" class="text-decoration-none">{{ $note->title }}</a>
+                            @if(auth()->id() !== $note->user_id)
+                                <span class="badge text-bg-info ms-1" title="Compartida">🔗</span>
+                            @endif
+                        </h5>
+                        @if($note->description)
+                            <p class="card-text text-muted small">{{ \Illuminate\Support\Str::limit($note->description, 120) }}</p>
+                        @endif
+                        @if($note->tags->count())
+                            <div class="mb-2">
+                                @foreach($note->tags as $tag)
+                                    <span class="badge text-bg-secondary">#{{ $tag->name }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+                        <div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top">
+                            <small class="text-muted">{{ $note->created_at->format('d/m/Y H:i') }}</small>
+                            @if(auth()->id() === $note->user_id)
                                 <div>
-                                    ${note.tags.map(tag => `<span class="badge badge-primary">${tag.name}</span>`).join(' ')}
+                                    <a href="{{ route('notes.edit', $note) }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+                                    <form method="POST" action="{{ route('notes.destroy', $note) }}" class="d-inline" onsubmit="return confirm('¿Eliminar nota?')">
+                                        @csrf @method('DELETE')
+                                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
                                 </div>
-                            ` : ''}
-                            <small class="text-muted">Creada: ${new Date(note.created_at).toLocaleDateString('es-ES')}</small>
-                        </div>
-                        <div class="col-md-3 text-end">
-                            <a href="/notes/${note.id}" class="btn btn-sm btn-outline-primary mb-1">Ver</a>
-                            <a href="/notes/${note.id}/edit" class="btn btn-sm btn-outline-warning mb-1">Editar</a>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteNote(${note.id})">Eliminar</button>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
-        `).join('');
-    }
-
-    async function deleteNote(id) {
-        if (!confirm('¿Eliminar esta nota?')) return;
-
-        try {
-            await apiCall(`/v1/notes/${id}`, 'DELETE');
-            alert('Nota eliminada');
-            loadNotes();
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    // Cargar notas al iniciar
-    if (isAuthenticated()) {
-        loadNotes();
-    } else {
-        window.location.href = '/login';
-    }
-</script>
+        @endforeach
+    </div>
+    <div class="mt-4">{{ $notes->links() }}</div>
+@else
+    <div class="text-center py-5 text-muted">
+        <h4>📝 No hay notas</h4>
+        <p>Crea tu primera nota para comenzar.</p>
+        <a href="{{ route('notes.create') }}" class="btn btn-primary">Crear nota</a>
+    </div>
+@endif
 @endsection
-@endsection
-

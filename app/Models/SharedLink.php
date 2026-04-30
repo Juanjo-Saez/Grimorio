@@ -9,6 +9,8 @@ class SharedLink extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'note_id',
         'owner_id',
@@ -21,9 +23,6 @@ class SharedLink extends Model
         'created_at' => 'datetime',
     ];
 
-    const UPDATED_AT = null; // No actualizamos este campo
-
-    // Relaciones
     public function note()
     {
         return $this->belongsTo(Note::class);
