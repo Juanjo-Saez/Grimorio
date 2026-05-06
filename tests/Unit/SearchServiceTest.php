@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use App\Features\Note\Services\SearchService;
+use App\Services\SearchService;
 
 class SearchServiceTest extends TestCase
 {

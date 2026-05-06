@@ -1,44 +1,109 @@
 # Grimorio 📖
 
-Grimorio es una webapp para centralizar la toma y busqueda de notas. Grimorio es:
+Webapp de notas inspirada en el método **Zettelkasten**. Rápida, pragmática, flexible.
 
-- Rapido
-- Pragmatico
-- Flexible
+- Notas atómicas con título, descripción y contenido.
+- Tags por usuario, autocomplete y filtro combinado AND/OR sobre el texto.
+- Compartición entre usuarios registrados con permisos `read` o `edit`.
+- Multiusuario, autenticación por sesión Laravel (cookies + CSRF).
 
-Esta basado en el metodo [Zettlekasten](https://es.wikipedia.org/wiki/Zettelkasten), pero es flexible en el uso de otras metodologias.
+> Stack: PHP 8.1+ · Laravel 10 · MySQL 8 · Blade · Vanilla JS · Vite · PHPUnit · Cypress · Laravel Sail (Docker)
 
-Las notas se enlazan entre si mediante *links* y se agrupan por *etiquetas*.
+---
 
+## Estado del proyecto
 
-## Desarrollo
+| Fase | Estado |
+| ---- | ------ |
+| 1. CRUD de notas + tags + búsqueda | ✅ |
+| 2. Auth por sesiones (registro, login, logout, rate limit) | ✅ |
+| 3. Compartición con niveles `read`/`edit` | ✅ |
+| Mejoras (PDF export, links públicos sin auth, versiones, adjuntos) | 🕓 pendiente |
 
-Instalar dependencias
+Documento técnico completo en [`.github/spec.md`](.github/spec.md).
 
-`composer install`
+---
 
+## Desarrollo con Laravel Sail (recomendado)
 
-#### Sail
+Requiere [Docker](https://www.docker.com/get-started/).
 
-Requiere instalar y ejecutar [Docker](https://www.docker.com/get-started/).
+```bash
+composer install
+cp .env.example .env
+./vendor/bin/sail up -d
+./vendor/bin/sail artisan key:generate
+./vendor/bin/sail artisan migrate
+npm install && npm run dev
+```
 
-`./vendor/bin/sail up -d` Levanta el servidor y la base de datos.
+App disponible en `http://localhost`. phpMyAdmin en `http://localhost:8081`.
 
-`./vendor/bin/sail php artisan migrate:fresh --seed` Ejecuta de cero todas las migraciones y los seeders de la base de datos.
+> Todos los comandos de `php artisan` deben ir precedidos de `./vendor/bin/sail`.
 
-Servidor disponible en [https://localhost:80].
+```bash
+./vendor/bin/sail ps      # contenedores activos
+./vendor/bin/sail down    # apagar
+```
 
-`./vendor/bin/sail ps` Comprueba los contenedores levantados.
+## Desarrollo sin Sail
 
-`./vendor/bin/sail down` Apaga el servidor y la BBDD.
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+# configura DB_* en .env apuntando a tu MySQL local
+php artisan migrate
+npm install && npm run dev
+php artisan serve
+```
 
-**Todos los comandos de php artisan deben lanzar con `./vendor/bin/sail` delante.**
+---
 
+## Tests
 
-#### Testing con Cypress
+### PHPUnit (unit + feature, SQLite en memoria)
 
-`npm i` Instala la suite de cypress.
+```bash
+php artisan test
+# o
+./vendor/bin/sail test
+```
 
-`npx cypress open` Ejecuta los tests interactivos.
+Cubren:
 
-`npx cypress run` Ejecuta los tests desde el terminal.
+- `tests/Unit/SearchServiceTest.php` — parser AND/OR.
+- `tests/Unit/NoteTest.php` — fillables del modelo.
+- `tests/Feature/AuthTest.php` — registro, login OK/KO, logout.
+- `tests/Feature/NoteCrudTest.php` — CRUD propio + aislamiento entre usuarios.
+
+### Cypress (E2E)
+
+```bash
+npm install
+npx cypress open       # interactivo
+npx cypress run        # CLI
+```
+
+Happy path en [cypress/e2e/happypath.cy.js](cypress/e2e/happypath.cy.js).
+
+---
+
+## Estructura
+
+```
+app/Http/Controllers/   AuthController, NoteController, SharedLinkController
+app/Services/           NoteService, SearchService, TagService, SharedLinkService
+app/Models/             User, Note, Tag, SharedLink
+resources/views/        auth/, notes/, shared/, layouts/, home.blade.php
+routes/web.php          Todas las rutas (incluyendo AJAX /api/...)
+database/migrations/    users, notes, tags, note_tag, shared_links
+```
+
+Arquitectura MVC estándar de Laravel — **no** feature-based folders.
+
+---
+
+## Licencia
+
+Proyecto académico — Trabajo de Fin de Ciclo (DAW).
