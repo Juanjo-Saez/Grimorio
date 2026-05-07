@@ -1,15 +1,12 @@
 {
-  "base_path": "app/Features",
-  "features": [
-    "Auth",
-    "Note",
-    "SharedLink"
-  ],
-  "ai_directory": ".ai",
-  "ai_files": [
-    "requirements.md",
-    "plan.md",
-    "tasks.md",
-    "decisions.md"
-  ]
+  "architecture": "laravel-standard",
+  "controllers_path": "app/Http/Controllers",
+  "services_path": "app/Services",
+  "models_path": "app/Models",
+  "views_path": "resources/views",
+  "routes_files": ["routes/web.php"],
+  "controllers": ["AuthController", "NoteController", "SharedLinkController"],
+  "services": ["NoteService", "SearchService", "TagService", "SharedLinkService"],
+  "models": ["User", "Note", "Tag", "SharedLink"],
+  "auth": "laravel-session"
 }
