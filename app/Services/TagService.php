@@ -10,7 +10,7 @@ class TagService
 {
     public function getOrCreate(User $user, string $name): Tag
     {
-        $name = trim($name);
+        $name = strtoupper(trim($name));
         return Tag::firstOrCreate([
             'user_id' => $user->id,
             'name' => $name,

@@ -1,80 +1,46 @@
 @extends('layouts.app')
-@section('title', 'Nueva nota')
+@section('title', 'Nueva Nota - Grimorio')
 
 @section('content')
-<div class="row">
-    <div class="col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h3 class="mb-4">Nueva nota</h3>
-                <form method="POST" action="{{ route('notes.store') }}">
-                    @csrf
-                    <div class="mb-3">
-                        <label class="form-label">Título *</label>
-                        <input type="text" name="title" value="{{ old('title') }}" class="form-control" required maxlength="255">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Descripción</label>
-                        <input type="text" name="description" value="{{ old('description') }}" class="form-control" maxlength="500" placeholder="Resumen breve">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Contenido</label>
-                        <textarea name="content" rows="10" class="form-control">{{ old('content') }}</textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Tags (separados por coma)</label>
-                        <input type="text" name="tags" id="tagsInput" value="{{ old('tags') }}" class="form-control" placeholder="javascript, productividad" list="userTagsList">
-                        <datalist id="userTagsList">
-                            @foreach($userTags as $tag)
-                                <option value="{{ $tag->name }}">
-                            @endforeach
-                        </datalist>
-                        <small class="text-muted">Al añadir un tag existente verás notas relacionadas a la derecha.</small>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-primary">Guardar</button>
-                        <a href="{{ route('notes.index') }}" class="btn btn-outline-secondary">Cancelar</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="card shadow-sm sticky-top" style="top:1rem">
-            <div class="card-body">
-                <h6 class="card-title">Notas relacionadas</h6>
-                <div id="related" class="text-muted small">Escribe un tag para ver notas relacionadas.</div>
-            </div>
+<div style="max-width: 900px; margin: 0 auto;">
+    <h1 style="margin-bottom: 3rem;">Crear Nueva Nota</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ route('notes.store') }}">
+                @csrf
+
+                <div class="form-group">
+                    <label for="title">Título *</label>
+                    <input type="text" id="title" name="title" style="width: 100%; font-size: 1.3rem; font-weight: 600;" placeholder="Dale un nombre memorable" value="{{ old('title') }}" required>
+                    @error('title') <small style="color: #f87171;">{{ $message }}</small> @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descripción</label>
+                    <textarea id="description" name="description" style="width: 100%; height: 100px; font-size: 1rem; resize: vertical;" placeholder="Un resumen breve de la nota...">{{ old('description') }}</textarea>
+                    @error('description') <small style="color: #f87171;">{{ $message }}</small> @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="content">Contenido</label>
+                    <textarea id="content" name="content" style="width: 100%; height: 400px; font-size: 1rem; resize: vertical; font-family: 'Courier New', monospace;" placeholder="Escribe tu contenido aquí...">{{ old('content') }}</textarea>
+                    @error('content') <small style="color: #f87171;">{{ $message }}</small> @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="tags">Tags</label>
+                    <input type="text" id="tags" name="tags" style="width: 100%;" placeholder="Separa con comas: trabajo, importante, urgente..." value="{{ old('tags') }}">
+                    <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem;">Escribe tags separados por comas para categorizar tu nota</small>
+                    @error('tags') <small style="color: #f87171;">{{ $message }}</small> @enderror
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn-primary" style="padding: 1rem 2rem;">Crear Nota</button>
+                    <a href="{{ route('notes.index') }}" class="btn-logout" style="padding: 1rem 2rem;">Cancelar</a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-
-@push('scripts')
-<script>
-const userTags = @json($userTags->pluck('id', 'name'));
-const input = document.getElementById('tagsInput');
-const related = document.getElementById('related');
-
-async function refreshRelated() {
-    const names = input.value.split(',').map(s => s.trim()).filter(Boolean);
-    const matched = names.map(n => userTags[n]).filter(Boolean);
-    if (!matched.length) { related.innerHTML = 'Escribe un tag para ver notas relacionadas.'; return; }
-
-    const all = [];
-    for (const id of matched) {
-        const r = await fetch(`/api/notes/by-tag/${id}`, {headers:{'Accept':'application/json'}});
-        if (r.ok) all.push(...await r.json());
-    }
-    if (!all.length) { related.innerHTML = '<em>Sin notas previas con ese tag.</em>'; return; }
-
-    const seen = new Set();
-    const unique = all.filter(n => !seen.has(n.id) && seen.add(n.id));
-    related.innerHTML = unique.slice(0,5).map(n =>
-        `<div class="border-bottom py-2"><a href="/notes/${n.id}" target="_blank">${n.title}</a><br><small class="text-muted">${n.description || ''}</small></div>`
-    ).join('');
-}
-
-input.addEventListener('input', () => { clearTimeout(window._t); window._t = setTimeout(refreshRelated, 400); });
-</script>
-@endpush
 @endsection

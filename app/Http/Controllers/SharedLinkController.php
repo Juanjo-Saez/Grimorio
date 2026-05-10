@@ -51,7 +51,12 @@ class SharedLinkController extends Controller
         } catch (\Exception $e) {
             abort(403, $e->getMessage());
         }
-        return view('shared.show', ['link' => $link, 'note' => $link->note->load('tags')]);
+        return view('shared.show', [
+            'link' => $link,
+            'note' => $link->note->load('tags'),
+            'token' => $token,
+            'access_level' => $link->access_level,
+        ]);
     }
 
     public function updateShared(Request $request, string $token)

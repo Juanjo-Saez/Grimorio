@@ -1,51 +1,91 @@
 @extends('layouts.app')
-@section('title', $note->title)
+@section('title', $note->title . ' (Compartida) - Grimorio')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-lg-9">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div>
-                        <h2 class="mb-1">{{ $note->title }}</h2>
-                        <small class="text-muted">Compartida por {{ $link->owner->email }} ·
-                            <span class="badge text-bg-{{ $link->access_level === 'edit' ? 'warning' : 'info' }}">{{ $link->access_level }}</span>
+<a href="{{ route('shared.index') }}" style="color: var(--accent-gold); text-decoration: none; font-weight: 600; display: inline-block; margin-bottom: 2rem;">← Volver a compartidas</a>
+
+<div class="grid-2" style="grid-template-columns: 2fr 1fr;">
+    <div>
+        <!-- Encabezado y Contenido -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-body">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 2rem;">
+                    <div style="flex: 1;">
+                        <h1 style="margin-bottom: 0.5rem;">{{ $note->title }}</h1>
+                        @if($note->description)
+                            <p style="font-size: 1.1rem; color: var(--text-secondary);">{{ $note->description }}</p>
+                        @endif
+                        <small style="color: var(--text-secondary);">
+                            Creada {{ $note->created_at->format('d/m/Y H:i') }} · Actualizada {{ $note->updated_at->format('d/m/Y H:i') }}
                         </small>
                     </div>
-                    <a href="{{ route('shared.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
                 </div>
 
                 @if($note->tags->count())
-                    <div class="mb-3">
-                        @foreach($note->tags as $tag)<span class="badge text-bg-secondary">#{{ $tag->name }}</span>@endforeach
+                    <div style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--glass-border);">
+                        @foreach($note->tags as $tag)
+                            <span class="badge">#{{ $tag->name }}</span>
+                        @endforeach
                     </div>
                 @endif
 
-                <hr>
+                <div class="content-pre">{{ $note->content ?? '(Sin contenido)' }}</div>
 
-                @if($link->access_level === 'edit')
-                    <form method="POST" action="{{ route('shared.update', $link->token) }}">
-                        @csrf @method('PUT')
-                        <div class="mb-3">
-                            <label class="form-label">Descripción</label>
-                            <input type="text" name="description" value="{{ old('description', $note->description) }}" class="form-control" maxlength="500">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Contenido</label>
-                            <textarea name="content" rows="14" class="form-control">{{ old('content', $note->content) }}</textarea>
-                        </div>
-                        <div class="alert alert-info small">El título solo lo puede editar el propietario.</div>
-                        <button class="btn btn-primary">Guardar cambios</button>
-                    </form>
+                @if(isset($access_level) && $access_level === 'edit')
+                    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--glass-border);">
+                        <form method="POST" action="{{ route('shared.update', $token) }}">
+                            @csrf @method('PUT')
+
+                            <h3 style="margin-bottom: 1rem;">Editar Contenido</h3>
+
+                            <div class="form-group">
+                                <label for="description">Descripción</label>
+                                <textarea id="description" name="description" style="width: 100%; height: 80px;">{{ $note->description }}</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="content">Contenido</label>
+                                <textarea id="content" name="content" style="width: 100%; height: 300px; font-family: 'Courier New', monospace;">{{ $note->content }}</textarea>
+                            </div>
+
+                            <button type="submit" class="btn-primary" style="padding: 0.75rem 1.5rem;">Guardar cambios</button>
+                        </form>
+                    </div>
                 @else
-                    @if($note->description)
-                        <p class="text-muted">{{ $note->description }}</p>
-                    @endif
-                    <div class="content-pre">{{ $note->content ?? '(Sin contenido)' }}</div>
+                    <div style="background: rgba(212, 175, 55, 0.1); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent-gold); margin-top: 2rem;">
+                        <small style="color: var(--text-secondary);">
+                            <strong style="color: var(--accent-gold);"> Lectura</strong> — Esta nota te ha sido compartida en modo lectura. No puedes editarla.
+                        </small>
+                    </div>
                 @endif
             </div>
         </div>
     </div>
+
+    <!-- Sidebar -->
+    <div>
+        <div class="card">
+            <div class="card-body">
+                <h3 style="margin-bottom: 1rem;">Información de compartición</h3>
+                <div style="display: grid; gap: 1rem;">
+                    <div style="border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+                        <small style="color: var(--text-secondary); display: block;">Propietario</small>
+                        <p style="margin: 0; color: var(--text-primary);">{{ $note->user->email }}</p>
+                    </div>
+                    <div style="border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+                        <small style="color: var(--text-secondary); display: block;">Nivel de acceso</small>
+                        <p style="margin: 0; color: var(--accent-gold); font-weight: 600;">
+                            {{ isset($access_level) && $access_level === 'edit' ? 'Edición (puedes modificar)' : 'Lectura (solo ver)' }}
+                        </p>
+                    </div>
+                    <div>
+                        <small style="color: var(--text-secondary); display: block;">Compartido</small>
+                        <p style="margin: 0; color: var(--text-primary);">{{ $link->created_at?->format('d/m/Y H:i') ?? 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 @endsection

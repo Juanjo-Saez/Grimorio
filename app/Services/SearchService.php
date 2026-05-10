@@ -40,29 +40,36 @@ class SearchService
         // Filtro de texto (LIKE en title, content, description)
         if (!empty($terms)) {
             $builder->where(function (Builder $q) use ($terms, $operator) {
-                foreach ($terms as $term) {
+                foreach ($terms as $index => $term) {
                     $like = '%' . $term . '%';
-                    if ($operator === 'OR') {
-                        $q->orWhere(function (Builder $sub) use ($like) {
-                            $sub->where('title', 'LIKE', $like)
-                                ->orWhere('content', 'LIKE', $like)
-                                ->orWhere('description', 'LIKE', $like);
-                        });
+                    $condition = function (Builder $sub) use ($like) {
+                        $sub->where('title', 'LIKE', $like)
+                            ->orWhere('content', 'LIKE', $like)
+                            ->orWhere('description', 'LIKE', $like);
+                    };
+                    
+                    // En OR, usa orWhere solo DESPUÉS de la primera iteración
+                    if ($operator === 'OR' && $index > 0) {
+                        $q->orWhere($condition);
                     } else {
-                        $q->where(function (Builder $sub) use ($like) {
-                            $sub->where('title', 'LIKE', $like)
-                                ->orWhere('content', 'LIKE', $like)
-                                ->orWhere('description', 'LIKE', $like);
-                        });
+                        $q->where($condition);
                     }
                 }
             });
         }
 
-        // Filtro de tags (AND: todas las tags requeridas)
+        // Filtro de tags (AND/OR según operador)
         if (!empty($tagIds)) {
-            foreach ($tagIds as $tagId) {
-                $builder->whereHas('tags', fn ($q) => $q->where('tags.id', $tagId));
+            if ($operator === 'OR') {
+                // OR: nota debe tener al menos uno de los tags
+                $builder->whereHas('tags', function (Builder $q) use ($tagIds) {
+                    $q->whereIn('tags.id', $tagIds);
+                });
+            } else {
+                // AND: nota debe tener TODOS los tags
+                foreach ($tagIds as $tagId) {
+                    $builder->whereHas('tags', fn ($q) => $q->where('tags.id', $tagId));
+                }
             }
         }
 

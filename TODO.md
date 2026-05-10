@@ -1,12 +1,22 @@
 - En la búsqueda el AND o OR tiene que cambiar.
 - Indice con numero de pagina
-- Cada pinto page break
-- Gráfico del DAFO
+- Cada punto page break
 - Justificar los párrafos.
 - Modo Oscuro (Por CSS?)
 - Hacer un contenedor para mysql
 - otro para phpmyadmin
 - un volumen
+- Cambiar la X de cuando se crea una nota 
+- Poder eliminar tags
+- Componentizar (Si hay tiempo)
+- View de Perfil
+- Arreglar el compartir notas (Undefined variable $access_level)
+- Que las notas no tengan descripción y que muestren el contenido de la nota
+- La anotación de poderes de notas compartidas aparece en inglés (Read) y no en español
+- Poner que en las badge el cursos no aparezca como clicable
+- Si da tiempo meter storybook
+
+Hacer listado de todas las funcionalidades de la app en detalle. Y luego ir rellenando cada apartado preguntandole a la IA (En qué punto se relacionan las notas, cómo se relacionan, etc)
 
 Apuntar los bloqueos y que partes me costaron más (fases de Gantt de previsión) Establecer buenas estimaciones y saber qué cosas han costado menos esperando más y viceversa
 Mencionar las razones de por qué (Por ejemplo, las prácticas han ayudado en la JWT) Se busca retroalimentacion entre practicas y proyectos
@@ -31,3 +41,4 @@ Hablar de por qué laravel, por qué sail, blade, etc. Y decir varias cosas buen
 
 !Preguntas para siguiente reunion:
 - Dejo el DAFO en texto e imagen o solo una de las dos?
+
