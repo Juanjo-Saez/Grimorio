@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
@@ -44,13 +45,13 @@ class AuthController extends Controller
 
         $user = \App\Models\User::create([
             'email' => $data['email'],
-            'password' => $data['password'],
+            'password' => Hash::make($data['password']),
         ]);
 
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('notes.index')->with('success', '¡Bienvenido a Grimorio!');
+        return redirect(route('notes.index'))->with('success', '¡Bienvenido a Grimorio!');
     }
 
     public function logout(Request $request)

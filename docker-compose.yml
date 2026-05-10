@@ -5,7 +5,9 @@ services:
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
-        image: sail-8.4/app
+        image: grimorio-laravel
+        container_name: grimorio-laravel
+        restart: unless-stopped
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
@@ -20,51 +22,40 @@ services:
         volumes:
             - '.:/var/www/html'
         networks:
-            - sail
+            - grimorio
         depends_on:
-            - mysql
+            mysql:
+                condition: service_healthy
+
     mysql:
-        image: 'mysql/mysql-server:8.0'
+        image: 'mysql:8.0'
+        container_name: grimorio-mysql
+        restart: unless-stopped
         ports:
             - '${FORWARD_DB_PORT:-3306}:3306'
         environment:
-            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ROOT_HOST: '%'
-            MYSQL_DATABASE: '${DB_DATABASE}'
-            MYSQL_USER: '${DB_USERNAME}'
-            MYSQL_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+            MYSQL_DATABASE: '${DB_DATABASE:-grimorio}'
+            MYSQL_USER: '${DB_USERNAME:-wizard}'
+            MYSQL_PASSWORD: '${DB_PASSWORD:-password}'
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD:-password}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 0
         volumes:
-            - 'sail-mysql:/var/lib/mysql'
-            - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
-        networks:
-            - sail
-        healthcheck:
-            test:
-                - CMD
-                - mysqladmin
-                - ping
-                - '-p${DB_PASSWORD}'
-            retries: 3
-            timeout: 5s
-          
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        ports:
-        - "8081:80"
-        environment:
-        - PMA_HOST=mysql
-        - PMA_USER=wizard
-        - PMA_PASSWORD=password
-        depends_on:
-        - mysql
-        networks:
-        - sail 
+            - 'mysql-data:/var/lib/mysql'
 
+        command: --default-authentication-plugin=mysql_native_password
+
+        networks:
+            - grimorio
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${DB_USERNAME:-wizard}", "-p${DB_PASSWORD:-password}"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
 networks:
-    sail:
+    grimorio:
         driver: bridge
+
 volumes:
-    sail-mysql:
+    mysql-data:
         driver: local

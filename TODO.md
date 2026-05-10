@@ -3,6 +3,10 @@
 - Cada pinto page break
 - Gráfico del DAFO
 - Justificar los párrafos.
+- Modo Oscuro (Por CSS?)
+- Hacer un contenedor para mysql
+- otro para phpmyadmin
+- un volumen
 
 Apuntar los bloqueos y que partes me costaron más (fases de Gantt de previsión) Establecer buenas estimaciones y saber qué cosas han costado menos esperando más y viceversa
 Mencionar las razones de por qué (Por ejemplo, las prácticas han ayudado en la JWT) Se busca retroalimentacion entre practicas y proyectos
