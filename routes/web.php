@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     // AJAX endpoints (en web para usar la sesión)
     Route::get('/api/user/tags', [NoteController::class, 'userTags'])->name('api.user.tags');
     Route::get('/api/notes/by-tag/{tag}', [NoteController::class, 'notesByTag'])->name('api.notes.byTag');
+    Route::post('/api/tags/suggest', [NoteController::class, 'suggestTags'])->name('api.tags.suggest');
 
     // Compartir
     Route::post('/notes/{note}/share', [SharedLinkController::class, 'store'])->name('shared.store');

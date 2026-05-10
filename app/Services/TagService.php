@@ -59,4 +59,43 @@ class TagService
             ->limit($limit)
             ->get(['id', 'title', 'description', 'created_at']);
     }
+
+    /**
+     * Sugerir tags basados en palabras encontradas en el contenido de una nota.
+     * Busca coincidencias case-insensitive entre palabras del contenido y nombres de tags.
+     * 
+     * @param User $user
+     * @param string $title
+     * @param string $content
+     * @param string $description
+     * @return array Array de tags sugeridos con estructura ['id' => int, 'name' => string]
+     */
+    public function suggestTagsFromContent(User $user, string $title = '', string $content = '', string $description = ''): array
+    {
+        $allTags = $this->getUserTags($user);
+        
+        // Combinar todo el contenido
+        $fullText = strtolower(trim($title) . ' ' . trim($content) . ' ' . trim($description));
+        
+        if (empty($fullText)) {
+            return [];
+        }
+
+        $suggested = [];
+
+        foreach ($allTags as $tag) {
+            $tagName = strtolower($tag->name);
+            
+            // Buscar el nombre del tag como palabra completa (para evitar falsos positivos)
+            // Usamos límites de palabra \b en regex
+            if (preg_match('/\b' . preg_quote($tagName, '/') . '\b/i', $fullText)) {
+                $suggested[] = [
+                    'id' => $tag->id,
+                    'name' => $tag->name,
+                ];
+            }
+        }
+
+        return $suggested;
+    }
 }

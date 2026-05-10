@@ -143,4 +143,26 @@ class NoteController extends Controller
     {
         return response()->json($this->tags->getUserTags(Auth::user()));
     }
+
+    /**
+     * AJAX: sugerir tags basados en el contenido de la nota.
+     * Recibe POST con title, content, description.
+     */
+    public function suggestTags(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => ['nullable', 'string'],
+            'content' => ['nullable', 'string'],
+            'description' => ['nullable', 'string'],
+        ]);
+
+        $suggested = $this->tags->suggestTagsFromContent(
+            Auth::user(),
+            $validated['title'] ?? '',
+            $validated['content'] ?? '',
+            $validated['description'] ?? ''
+        );
+
+        return response()->json(['suggested' => $suggested]);
+    }
 }
