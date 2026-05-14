@@ -4,6 +4,7 @@
 
 Se ha usado Oracle Cloud para desplegar la app
 Estoy generando el CDCI mediente secrets en Github para hacer deploy en Oracle cada vez que haga un push a master.
+He añadido .github/workflows/deploy.yml con los detalles y asegurado permisos en el servidor, ahora mismo cada cambio pusheado se actualiza automáticamente
 
 
 ## Resumen Ejecutivo

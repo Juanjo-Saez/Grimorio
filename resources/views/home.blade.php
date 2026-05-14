@@ -5,7 +5,7 @@
 <!-- Hero Section -->
 <div style="margin-bottom: 6rem;">
     <h1 style="font-size: 3.5rem; line-height: 1.1; margin-bottom: 1.5rem;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; margin-right: 0.5rem; vertical-align: -0.35rem;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="6" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="12" cy="18" r="1.2" fill="currentColor"/></svg> Grimorio
+        <i class="fas fa-book-magic" style="margin-right: 0.5rem;"></i> Grimorio
     </h1>
     <p style="font-size: 1.2rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 2rem; max-width: 600px;">
         Una experiencia premium para centralizar tus pensamientos usando el método Zettelkasten. 

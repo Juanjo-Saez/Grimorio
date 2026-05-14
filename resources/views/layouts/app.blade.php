@@ -8,6 +8,7 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
@@ -376,7 +377,7 @@
 <body>
 <nav>
     <div class="navbar-container">
-        <a href="{{ route('home') }}" class="navbar-brand"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="6" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="12" cy="18" r="1.2" fill="currentColor"/></svg> GRIMORIO</a>
+        <a href="{{ route('home') }}" class="navbar-brand"><i class="fas fa-book-magic" style="margin-right: 0.5rem;"></i> GRIMORIO</a>
         <ul class="nav-links">
             @auth
                 <li><a href="{{ route('notes.index') }}" class="nav-link">Mis Notas</a></li>
