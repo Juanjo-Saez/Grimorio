@@ -376,7 +376,7 @@
 <body>
 <nav>
     <div class="navbar-container">
-        <a href="{{ route('home') }}" class="navbar-brand">✨ GRIMORIO</a>
+        <a href="{{ route('home') }}" class="navbar-brand"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="6" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="12" cy="18" r="1.2" fill="currentColor"/></svg> GRIMORIO</a>
         <ul class="nav-links">
             @auth
                 <li><a href="{{ route('notes.index') }}" class="nav-link">Mis Notas</a></li>
