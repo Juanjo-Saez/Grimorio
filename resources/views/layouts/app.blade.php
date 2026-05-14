@@ -377,7 +377,7 @@
 <body>
 <nav>
     <div class="navbar-container">
-        <a href="{{ route('home') }}" class="navbar-brand"><i class="fas fa-book-magic" style="margin-right: 0.5rem;"></i> GRIMORIO</a>
+        <a href="{{ route('home') }}" class="navbar-brand"><i class="fas fa-book-open" style="margin-right: 0.5rem;"></i> GRIMORIO</a>
         <ul class="nav-links">
             @auth
                 <li><a href="{{ route('notes.index') }}" class="nav-link">Mis Notas</a></li>

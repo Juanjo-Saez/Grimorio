@@ -5,7 +5,7 @@
 <!-- Hero Section -->
 <div style="margin-bottom: 6rem;">
     <h1 style="font-size: 3.5rem; line-height: 1.1; margin-bottom: 1.5rem;">
-        <i class="fas fa-book-magic" style="margin-right: 0.5rem;"></i> Grimorio
+        <i class="fas fa-book-open" style="margin-right: 0.5rem;"></i> Grimorio
     </h1>
     <p style="font-size: 1.2rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 2rem; max-width: 600px;">
         Una experiencia premium para centralizar tus pensamientos usando el método Zettelkasten. 
