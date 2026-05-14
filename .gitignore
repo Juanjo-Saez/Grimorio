@@ -20,8 +20,3 @@ yarn-error.log
 /.idea
 /.vscode
 *.dtmp
-/.github
-/documentacion
-Mermaid.md
-TODO.md
-TestCases.php.md
