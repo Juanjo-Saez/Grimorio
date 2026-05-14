@@ -13,9 +13,11 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             cd ${{ secrets.DEPLOY_PATH }}
+            git config --global --add safe.directory ${{ secrets.DEPLOY_PATH }}
             git pull origin master
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
             php artisan cache:clear
             php artisan config:clear
+            sudo chmod -R 777 storage bootstrap/cache
             sudo systemctl restart php-fpm
