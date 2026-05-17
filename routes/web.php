@@ -35,8 +35,11 @@ Route::middleware('auth')->group(function () {
 
     // Compartir
     Route::post('/notes/{note}/share', [SharedLinkController::class, 'store'])->name('shared.store');
+    Route::post('/notes/{note}/share-public', [SharedLinkController::class, 'createPublic'])->name('shared.createPublic');
     Route::delete('/shared/{sharedLink}', [SharedLinkController::class, 'destroy'])->name('shared.destroy');
     Route::get('/shared', [SharedLinkController::class, 'sharedWithMe'])->name('shared.index');
-    Route::get('/shared/{token}', [SharedLinkController::class, 'viewShared'])->name('shared.show');
     Route::put('/shared/{token}', [SharedLinkController::class, 'updateShared'])->name('shared.update');
 });
+
+// Public shared links (permite acceso sin autenticación)
+Route::get('/shared/{token}', [SharedLinkController::class, 'viewShared'])->name('shared.show');

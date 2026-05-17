@@ -28,6 +28,22 @@ class SharedLinkController extends Controller
         return back()->with('success', 'Nota compartida correctamente.');
     }
 
+    public function createPublic(Request $request, Note $note)
+    {
+        $data = $request->validate([
+            'access_level' => ['required', 'in:read,edit'],
+        ]);
+
+        try {
+            $link = $this->shares->createPublicLink(Auth::user(), $note, $data['access_level']);
+            $publicUrl = route('shared.show', ['token' => $link->token], true);
+        } catch (\Exception $e) {
+            return back()->withErrors(['share' => $e->getMessage()]);
+        }
+
+        return back()->with('success', 'Link público generado.')->with('public_link', $publicUrl);
+    }
+
     public function destroy(SharedLink $sharedLink)
     {
         try {
@@ -46,6 +62,12 @@ class SharedLinkController extends Controller
 
     public function viewShared(string $token)
     {
+        // Si no está autenticado, guarda el token en sesión y redirige a login
+        if (!Auth::check()) {
+            session(['shared_token' => $token]);
+            return redirect()->route('login')->with('info', 'Inicia sesión para acceder a la nota compartida.');
+        }
+
         try {
             $link = $this->shares->validateAccess($token, Auth::user());
         } catch (\Exception $e) {

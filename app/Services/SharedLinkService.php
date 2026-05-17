@@ -52,9 +52,35 @@ class SharedLinkService
             ->paginate(10);
     }
 
+    public function createPublicLink(User $owner, Note $note, string $accessLevel = 'read'): SharedLink
+    {
+        if ($note->user_id !== $owner->id) {
+            throw new AuthorizationException('No puedes compartir una nota que no es tuya.');
+        }
+
+        $accessLevel = in_array($accessLevel, ['read', 'edit'], true) ? $accessLevel : 'read';
+
+        // Crear o actualizar un link público (recipient_id = null)
+        return SharedLink::updateOrCreate(
+            ['note_id' => $note->id, 'recipient_id' => null],
+            [
+                'owner_id' => $owner->id,
+                'token' => bin2hex(random_bytes(32)),
+                'access_level' => $accessLevel,
+            ]
+        );
+    }
+
     public function validateAccess(string $token, User $user): SharedLink
     {
         $link = SharedLink::with('note', 'owner')->where('token', $token)->firstOrFail();
+        
+        // Si es link público (recipient_id = null), permite acceso
+        if ($link->recipient_id === null) {
+            return $link;
+        }
+        
+        // Si es link privado, verifica que el usuario sea el receptor
         if ($link->recipient_id !== $user->id) {
             throw new AuthorizationException('No tienes acceso a esta nota.');
         }

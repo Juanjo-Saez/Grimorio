@@ -23,6 +23,13 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+            
+            // Si hay un token compartido en sesión, redirija allí
+            if ($token = session('shared_token')) {
+                $request->session()->forget('shared_token');
+                return redirect()->route('shared.show', ['token' => $token]);
+            }
+            
             return redirect()->intended(route('notes.index'));
         }
 
@@ -50,6 +57,12 @@ class AuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+
+        // Si hay un token compartido en sesión, redirija allí
+        if ($token = session('shared_token')) {
+            $request->session()->forget('shared_token');
+            return redirect()->route('shared.show', ['token' => $token])->with('success', '¡Bienvenido a Grimorio!');
+        }
 
         return redirect(route('notes.index'))->with('success', '¡Bienvenido a Grimorio!');
     }

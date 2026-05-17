@@ -8,6 +8,12 @@
             <h1 style="text-align: center; margin-bottom: 2rem;">Crear Cuenta</h1>
             <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">Únete a Grimorio y comienza a organizar tus pensamientos</p>
             
+            @if (session('info'))
+                <div style="background: rgba(212, 175, 55, 0.1); border-left: 4px solid var(--accent-gold); padding: 1rem; margin-bottom: 1.5rem; border-radius: 0.25rem;">
+                    <p style="margin: 0; color: var(--accent-gold); font-size: 0.9rem;">{{ session('info') }}</p>
+                </div>
+            @endif
+            
             <form method="POST" action="{{ route('register') }}">
                 @csrf
                 
