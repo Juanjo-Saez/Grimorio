@@ -158,27 +158,3 @@ class SharedLinkController extends Controller
         return view('shared.index', compact('shares'));
     }
 }
-
-        ]);
-    }
-
-    public function updateShared(Request $request, string $token)
-    {
-        $link = $this->shares->validateAccess($token, Auth::user());
-        if ($link->access_level !== 'edit') {
-            abort(403, 'Solo lectura.');
-        }
-
-        $data = $request->validate([
-            'content' => ['nullable', 'string'],
-            'description' => ['nullable', 'string', 'max:500'],
-        ]);
-
-        $link->note->update([
-            'content' => $data['content'] ?? null,
-            'description' => $data['description'] ?? null,
-        ]);
-
-        return redirect()->route('shared.show', $token)->with('success', 'Cambios guardados.');
-    }
-}
