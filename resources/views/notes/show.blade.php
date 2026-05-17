@@ -85,36 +85,98 @@
 
 <!-- Modal de compartición -->
 <div id="shareModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;">
-    <div class="card" style="width: 100%; max-width: 500px;">
+    <div class="card" style="width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
         <div class="card-body">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                 <h2>Compartir Nota</h2>
                 <button onclick="document.getElementById('shareModal').style.display='none'" style="background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer;">×</button>
             </div>
 
-            <form method="POST" action="{{ route('shared.store', $note) }}">
-                @csrf
-                
-                <div class="form-group">
-                    <label>Email del destinatario</label>
-                    <input type="email" name="recipient_email" style="width: 100%;" required>
-                    @error('recipient_email') <small style="color: #f87171;">{{ $message }}</small> @enderror
+            <!-- TAB 1: Link Copiable -->
+            <div id="tab-link" style="display: block;">
+                <h3 style="margin-bottom: 1rem; color: var(--accent-gold);"> Link Copiable</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                    Genera un enlace que puedes copiar y compartir por WhatsApp, email, redes sociales, etc.
+                </p>
+
+                <form method="POST" action="{{ route('shared.store', $note) }}" id="form-link">
+                    @csrf
+                    <input type="hidden" name="share_type" value="link">
+                    
+                    <div class="form-group">
+                        <label>Nivel de acceso</label>
+                        <select name="access_level" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 2px solid var(--glass-border); background: var(--glass-bg); color: var(--text-primary); margin-bottom: 1.5rem;">
+                            <option value="read"> Lectura (solo ver sin login)</option>
+                            <option value="edit"> Edición (requiere login para editar)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 0.75rem;">🔗 Generar Link</button>
+                </form>
+
+                @if(session('share_link'))
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(212, 175, 55, 0.1); border-radius: 8px; border: 1px solid var(--accent-gold);">
+                        <small style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Tu enlace:</small>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" readonly value="{{ session('share_link') }}" 
+                                style="flex: 1; padding: 0.75rem; border-radius: 6px; background: var(--primary-dark); color: var(--accent-gold); border: 1px solid var(--glass-border); font-size: 0.85rem; word-break: break-all;">
+                            <button type="button" onclick="copyToClipboard('{{ session('share_link') }}')" 
+                                class="btn-primary" style="padding: 0.75rem 1rem; white-space: nowrap;">📋 Copiar</button>
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Separador -->
+            <div style="height: 1px; background: var(--glass-border); margin: 2rem 0;"></div>
+
+            <!-- TAB 2: Compartir por Email -->
+            <div id="tab-email">
+                <h3 style="margin-bottom: 1rem; color: var(--accent-gold);"> Compartir por Email</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                    Si la persona aún no está registrada, recibirá una invitación automática.
+                </p>
+
+                <form method="POST" action="{{ route('shared.store', $note) }}" id="form-email">
+                    @csrf
+                    <input type="hidden" name="share_type" value="email">
+                    
+                    <div class="form-group">
+                        <label>Email del destinatario</label>
+                        <input type="email" name="recipient_email" 
+                            style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 2px solid var(--glass-border); background: var(--glass-bg); color: var(--text-primary); margin-bottom: 1rem;">
+                        @error('recipient_email') <small style="color: #f87171;">{{ $message }}</small> @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nivel de acceso</label>
+                        <select name="access_level" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 2px solid var(--glass-border); background: var(--glass-bg); color: var(--text-primary); margin-bottom: 1.5rem;">
+                            <option value="read"> Lectura</option>
+                            <option value="edit"> Edición</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 0.75rem;">📤 Enviar Invitación</button>
+                </form>
+
+                @error('share') <p style="color: #f87171; margin-top: 1rem;">{{ $message }}</p> @enderror
+            </div>
+
+            @if(session('success'))
+                <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(52, 211, 153, 0.1); border-radius: 8px; border: 1px solid #34d399; color: #10b981;">
+                    {{ session('success') }}
                 </div>
-
-                <div class="form-group">
-                    <label>Nivel de acceso</label>
-                    <select name="access_level" style="width: 100%;">
-                        <option value="read">Lectura (solo ver)</option>
-                        <option value="edit">Edición (modificar contenido)</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn-primary" style="width: 100%; padding: 1rem;">Compartir</button>
-            </form>
-
-            @error('share') <p style="color: #f87171; margin-top: 1rem;">{{ $message }}</p> @enderror
+            @endif
         </div>
     </div>
 </div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Enlace copiado al portapapeles');
+    });
+}
+</script>
 
 @endsection

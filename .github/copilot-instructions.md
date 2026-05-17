@@ -29,6 +29,12 @@
 
 ---
 
+## Convenciones de estilo
+
+- Nunca uses emoticonos en código, comentarios o documentación oficial. Mantén un tono profesional y claro.
+
+---
+
 ## Fases de Desarrollo
 
 ### MVP (Fase 1)

@@ -13,12 +13,14 @@ return new class extends Migration
             $table->foreignId('note_id')->constrained()->cascadeOnDelete();
             $table->foreignId('owner_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('recipient_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->string('recipient_email')->nullable();
             $table->string('token', 64)->unique();
             $table->enum('access_level', ['read', 'edit'])->default('read');
             $table->timestamp('created_at')->useCurrent();
 
             $table->index('owner_id');
             $table->index('recipient_id');
+            $table->index('token');
         });
     }
 

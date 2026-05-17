@@ -15,6 +15,7 @@ class SharedLink extends Model
         'note_id',
         'owner_id',
         'recipient_id',
+        'recipient_email',
         'token',
         'access_level',
     ];
