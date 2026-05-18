@@ -115,7 +115,7 @@
                         </select>
                     </div>
 
-                    <button type="submit" class="btn-primary" style="width: 100%; padding: 0.75rem;">🔗 Generar Link</button>
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 0.75rem;">Generar Link</button>
                 </form>
 
                 <div id="link-result" style="display: none; margin-top: 1.5rem; padding: 1rem; background: rgba(212, 175, 55, 0.1); border-radius: 8px; border: 1px solid var(--accent-gold);">
@@ -123,8 +123,7 @@
                     <div style="display: flex; gap: 0.5rem;">
                         <input type="text" id="link-url" readonly 
                             style="flex: 1; padding: 0.75rem; border-radius: 6px; background: var(--primary-dark); color: var(--accent-gold); border: 1px solid var(--glass-border); font-size: 0.85rem; word-break: break-all;">
-                        <button type="button" onclick="copyToClipboard(document.getElementById('link-url').value)" 
-                            class="btn-primary" style="padding: 0.75rem 1rem; white-space: nowrap;">📋 Copiar</button>
+                        <button type="button" id="copy-btn" class="btn-primary" style="padding: 0.75rem 1rem; white-space: nowrap;">Copiar</button>
                     </div>
                 </div>
 
@@ -167,7 +166,7 @@
                         </select>
                     </div>
 
-                    <button type="submit" class="btn-primary" style="width: 100%; padding: 0.75rem;">📤 Enviar Invitación</button>
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 0.75rem;">Enviar Invitación</button>
                 </form>
 
                 @error('share') <p style="color: #f87171; margin-top: 1rem;">{{ $message }}</p> @enderror
@@ -192,6 +191,18 @@ function copyToClipboard(text) {
 // AJAX para el formulario de link
 document.addEventListener('DOMContentLoaded', function() {
     const formLink = document.getElementById('form-link');
+    const copyBtn = document.getElementById('copy-btn');
+    
+    // Manejador del botón Copiar
+    if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+            const linkUrl = document.getElementById('link-url').value;
+            if (linkUrl) {
+                copyToClipboard(linkUrl);
+            }
+        });
+    }
+    
     if (formLink) {
         formLink.addEventListener('submit', function(e) {
             e.preventDefault();
