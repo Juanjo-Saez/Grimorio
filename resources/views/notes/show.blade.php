@@ -71,7 +71,11 @@
                     <h3 style="margin-bottom: 1rem;">Compartida con</h3>
                     @foreach($note->sharedLinks as $link)
                         <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border);">
-                            <p style="margin: 0; color: var(--text-primary);">{{ $link->recipient->email }}</p>
+                            @if($link->recipient)
+                                <p style="margin: 0; color: var(--text-primary);">{{ $link->recipient->email }}</p>
+                            @else
+                                <p style="margin: 0; color: var(--text-primary); font-style: italic;">Link Público</p>
+                            @endif
                             <small style="color: var(--text-secondary);">
                                 Acceso: <strong>{{ ucfirst($link->access_level) }}</strong>
                             </small>

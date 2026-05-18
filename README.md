@@ -60,6 +60,17 @@ php artisan serve
 
 ---
 
+## Despliegue en Oracle Cloud
+
+```bash
+ssh -i ssh-key-2026-05-11.key opc@51.170.49.16
+cd /var/www/grimorio
+```
+
+## Conexión con BBDD de Oracle Cloud
+localhost, Port 3306, Database grimorio, Username grimorio, Password grimorio123
+
+
 ## Tests
 
 ### PHPUnit (unit + feature, SQLite en memoria)
