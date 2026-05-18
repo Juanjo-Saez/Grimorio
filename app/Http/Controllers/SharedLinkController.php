@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InviteToShareMail;
+use App\Mail\ShareNoteMail;
 use App\Models\Note;
 use App\Models\SharedLink;
 use App\Models\User;
@@ -70,9 +72,15 @@ class SharedLinkController extends Controller
             'recipient_email' => $email,
         ]);
 
-        $message = $user 
-            ? "Email enviado a {$email}" 
-            : "Invitación enviada a {$email}";
+        if ($user) {
+            // Usuario existente → enviar email con enlace
+            Mail::to($user->email)->send(new ShareNoteMail($note, $token, $data['access_level']));
+            $message = "Email enviado a {$email}";
+        } else {
+            // Usuario nuevo → enviar invitación con registro
+            Mail::to($email)->send(new InviteToShareMail($note, $token, $email));
+            $message = "Invitación enviada a {$email}";
+        }
 
         if ($request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json(['success' => $message]);

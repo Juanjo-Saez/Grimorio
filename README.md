@@ -70,6 +70,9 @@ cd /var/www/grimorio
 ## Conexión con BBDD de Oracle Cloud
 localhost, Port 3306, Database grimorio, Username grimorio, Password grimorio123
 
+## Comparticion de Links por Mailtrap
+
+Se usará en el futuro cuando se asocio a un dominio real, por el momento se enviarán desde Gmail automatizadamente.
 
 ## Tests
 
