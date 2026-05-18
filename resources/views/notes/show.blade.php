@@ -123,7 +123,7 @@
                     <div style="display: flex; gap: 0.5rem;">
                         <input type="text" id="link-url" readonly 
                             style="flex: 1; padding: 0.75rem; border-radius: 6px; background: var(--primary-dark); color: var(--accent-gold); border: 1px solid var(--glass-border); font-size: 0.85rem; word-break: break-all;">
-                        <button type="button" id="copy-btn" class="btn-primary" style="padding: 0.75rem 1rem; white-space: nowrap;">Copiar</button>
+                        <button type="button" onclick="const url = document.getElementById('link-url').value; if(url) { navigator.clipboard.writeText(url).then(() => alert('Enlace copiado')); }" class="btn-primary" style="padding: 0.75rem 1rem; white-space: nowrap;">Copiar</button>
                     </div>
                 </div>
 
@@ -182,24 +182,7 @@
 </div>
 
 <script>
-function copyToClipboard(text) {
-    if (!text) return;
-    navigator.clipboard.writeText(text).then(() => {
-        alert('Enlace copiado al portapapeles');
-    }).catch(err => {
-        console.error('Error al copiar:', err);
-    });
-}
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Botón Copiar - usar delegación de eventos para mayor robustez
-    document.addEventListener('click', function(e) {
-        if (e.target.id === 'copy-btn') {
-            const linkUrl = document.getElementById('link-url').value;
-            copyToClipboard(linkUrl);
-        }
-    });
-    
     // AJAX para el formulario de link
     const formLink = document.getElementById('form-link');
     if (formLink) {
