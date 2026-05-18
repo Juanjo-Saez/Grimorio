@@ -183,26 +183,25 @@
 
 <script>
 function copyToClipboard(text) {
+    if (!text) return;
     navigator.clipboard.writeText(text).then(() => {
         alert('Enlace copiado al portapapeles');
+    }).catch(err => {
+        console.error('Error al copiar:', err);
     });
 }
 
-// AJAX para el formulario de link
 document.addEventListener('DOMContentLoaded', function() {
-    const formLink = document.getElementById('form-link');
-    const copyBtn = document.getElementById('copy-btn');
-    
-    // Manejador del botón Copiar
-    if (copyBtn) {
-        copyBtn.addEventListener('click', function() {
+    // Botón Copiar - usar delegación de eventos para mayor robustez
+    document.addEventListener('click', function(e) {
+        if (e.target.id === 'copy-btn') {
             const linkUrl = document.getElementById('link-url').value;
-            if (linkUrl) {
-                copyToClipboard(linkUrl);
-            }
-        });
-    }
+            copyToClipboard(linkUrl);
+        }
+    });
     
+    // AJAX para el formulario de link
+    const formLink = document.getElementById('form-link');
     if (formLink) {
         formLink.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -221,7 +220,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.share_link) {
                     document.getElementById('link-url').value = data.share_link;
                     document.getElementById('link-result').style.display = 'block';
-                    // Limpiar el input de email si estaba lleno
                     document.querySelector('input[name="recipient_email"]').value = '';
                 }
                 if (data.success) {
