@@ -24,20 +24,35 @@ class SharedLinkController extends Controller
             'access_level' => ['required', 'in:read,edit'],
         ]);
 
-        $token = bin2hex(random_bytes(32));
-
         // Opción 1: Link abierto (copiable)
         if ($data['share_type'] === 'link') {
-            SharedLink::create([
-                'note_id' => $note->id,
-                'owner_id' => Auth::id(),
-                'token' => $token,
-                'access_level' => $data['access_level'],
-                'recipient_id' => null,
-                'recipient_email' => null,
-            ]);
+            // Reutilizar link público si ya existe para este access_level
+            $link = SharedLink::where('note_id', $note->id)
+                ->where('recipient_id', null)
+                ->where('access_level', $data['access_level'])
+                ->first();
 
-            $publicUrl = route('shared.show', ['token' => $token], true);
+            if (!$link) {
+                $link = SharedLink::create([
+                    'note_id' => $note->id,
+                    'owner_id' => Auth::id(),
+                    'token' => bin2hex(random_bytes(32)),
+                    'access_level' => $data['access_level'],
+                    'recipient_id' => null,
+                    'recipient_email' => null,
+                ]);
+            }
+
+            $publicUrl = route('shared.show', ['token' => $link->token], true);
+            
+            // Si es AJAX, devolver JSON
+            if ($request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json([
+                    'success' => 'Link generado',
+                    'share_link' => $publicUrl
+                ]);
+            }
+            
             return back()->with('success', 'Link generado')->with('share_link', $publicUrl);
         }
 
@@ -45,6 +60,7 @@ class SharedLinkController extends Controller
         $email = $data['recipient_email'];
         $user = User::where('email', $email)->first();
 
+        $token = bin2hex(random_bytes(32));
         SharedLink::create([
             'note_id' => $note->id,
             'owner_id' => Auth::id(),
@@ -54,15 +70,15 @@ class SharedLinkController extends Controller
             'recipient_email' => $email,
         ]);
 
-        if ($user) {
-            // Usuario existente → enviar email con enlace
-            // Mail::to($user->email)->send(new ShareNoteMail($note, $token, $data['access_level']));
-            return back()->with('success', "Email enviado a {$email}");
-        } else {
-            // Usuario nuevo → enviar invitación con registro
-            // Mail::to($email)->send(new InviteToShareMail($note, $token));
-            return back()->with('success', "Invitación enviada a {$email}");
+        $message = $user 
+            ? "Email enviado a {$email}" 
+            : "Invitación enviada a {$email}";
+
+        if ($request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json(['success' => $message]);
         }
+        
+        return back()->with('success', $message);
     }
 
     /**

@@ -118,16 +118,23 @@
                     <button type="submit" class="btn-primary" style="width: 100%; padding: 0.75rem;">🔗 Generar Link</button>
                 </form>
 
-                @if(session('share_link'))
-                    <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(212, 175, 55, 0.1); border-radius: 8px; border: 1px solid var(--accent-gold);">
-                        <small style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Tu enlace:</small>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <input type="text" readonly value="{{ session('share_link') }}" 
-                                style="flex: 1; padding: 0.75rem; border-radius: 6px; background: var(--primary-dark); color: var(--accent-gold); border: 1px solid var(--glass-border); font-size: 0.85rem; word-break: break-all;">
-                            <button type="button" onclick="copyToClipboard('{{ session('share_link') }}')" 
-                                class="btn-primary" style="padding: 0.75rem 1rem; white-space: nowrap;">📋 Copiar</button>
-                        </div>
+                <div id="link-result" style="display: none; margin-top: 1.5rem; padding: 1rem; background: rgba(212, 175, 55, 0.1); border-radius: 8px; border: 1px solid var(--accent-gold);">
+                    <small style="color: var(--text-secondary); display: block; margin-bottom: 0.5rem;">Tu enlace:</small>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="link-url" readonly 
+                            style="flex: 1; padding: 0.75rem; border-radius: 6px; background: var(--primary-dark); color: var(--accent-gold); border: 1px solid var(--glass-border); font-size: 0.85rem; word-break: break-all;">
+                        <button type="button" onclick="copyToClipboard(document.getElementById('link-url').value)" 
+                            class="btn-primary" style="padding: 0.75rem 1rem; white-space: nowrap;">📋 Copiar</button>
                     </div>
+                </div>
+
+                @if(session('share_link'))
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            document.getElementById('link-url').value = '{{ session('share_link') }}';
+                            document.getElementById('link-result').style.display = 'block';
+                        });
+                    </script>
                 @endif
             </div>
 
@@ -181,6 +188,39 @@ function copyToClipboard(text) {
         alert('Enlace copiado al portapapeles');
     });
 }
+
+// AJAX para el formulario de link
+document.addEventListener('DOMContentLoaded', function() {
+    const formLink = document.getElementById('form-link');
+    if (formLink) {
+        formLink.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            fetch('{{ route('shared.store', $note) }}', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.share_link) {
+                    document.getElementById('link-url').value = data.share_link;
+                    document.getElementById('link-result').style.display = 'block';
+                    // Limpiar el input de email si estaba lleno
+                    document.querySelector('input[name="recipient_email"]').value = '';
+                }
+                if (data.success) {
+                    console.log(data.success);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    }
+});
 </script>
 
 @endsection
