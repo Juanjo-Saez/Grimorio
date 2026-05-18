@@ -70,9 +70,9 @@ cd /var/www/grimorio
 ## Conexión con BBDD de Oracle Cloud
 localhost, Port 3306, Database grimorio, Username grimorio, Password grimorio123
 
-## Comparticion de Links por Mailtrap
+## Comparticion de Links por Mailgun
 
-Se usará en el futuro cuando se asocio a un dominio real, por el momento se enviarán desde Gmail automatizadamente.
+Primero se trató de hacer con Mailtrap pero requería dominio real. Luego se usó  Gmail automatizadamente pero no conseguía conectar. Finalmente se ha usado Mailgun pero Oracle Cloud no está permitiendolo pese a que exista el Egress Rule, así que por el momento lo dejaremos a futuro en TODO.
 
 ## Tests
 

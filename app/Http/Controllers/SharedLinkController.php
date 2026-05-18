@@ -62,25 +62,27 @@ class SharedLinkController extends Controller
         $email = $data['recipient_email'];
         $user = User::where('email', $email)->first();
 
-        $token = bin2hex(random_bytes(32));
-        SharedLink::create([
-            'note_id' => $note->id,
-            'owner_id' => Auth::id(),
-            'token' => $token,
-            'access_level' => $data['access_level'],
-            'recipient_id' => $user?->id,
-            'recipient_email' => $email,
-        ]);
-
+        // Crear o actualizar compartición (evitar duplicados)
         if ($user) {
-            // Usuario existente → enviar email con enlace
-            // TODO: Email notifications (blocked by Oracle Cloud firewall, implement after May 21)
-            // Mail::to($user->email)->send(new ShareNoteMail($note, $token, $data['access_level']));
-            $message = "Compartición creada. El usuario recibirá notificación vía email (próximamente)";
+            $share = SharedLink::firstOrCreate(
+                ['note_id' => $note->id, 'recipient_id' => $user->id],
+                [
+                    'owner_id' => Auth::id(),
+                    'token' => bin2hex(random_bytes(32)),
+                    'recipient_email' => $email,
+                ]
+            );
+            $share->update(['access_level' => $data['access_level']]);
+            $message = "Compartición actualizada. El usuario recibirá notificación vía email (próximamente)";
         } else {
-            // Usuario nuevo → enviar invitación con registro
-            // TODO: Email invitations (blocked by Oracle Cloud firewall, implement after May 21)
-            // Mail::to($email)->send(new InviteToShareMail($note, $token, $email));
+            $share = SharedLink::firstOrCreate(
+                ['note_id' => $note->id, 'recipient_email' => $email],
+                [
+                    'owner_id' => Auth::id(),
+                    'token' => bin2hex(random_bytes(32)),
+                ]
+            );
+            $share->update(['access_level' => $data['access_level']]);
             $message = "Invitación creada. El usuario recibirá el enlace vía email (próximamente)";
         }
 
